@@ -186,3 +186,20 @@
 .platform-coming-grid span{font-size:9px;line-height:1.5;color:#858da2}
 .privacy-note{display:flex;align-items:flex-start;gap:7px;font-size:10px;color:#858da2;line-height:1.6;margin-top:14px}
 @media(max-width:600px){.social-wrap{width:calc(100% - 28px);padding-top:25px}.social-top{padding:0 14px}.social-heading h1{font-size:23px}.steam-game-grid,.platform-coming-grid{grid-template-columns:1fr}.social-card{padding:14px}}
+
+
+/* Privacy-aware public player profiles */
+.public-profile-hero{display:flex;align-items:center;gap:18px}
+.public-profile-avatar{width:76px;height:76px;flex-shrink:0;border-radius:18px;overflow:hidden;background:#24283a;color:#b9a7ff;display:grid;place-items:center}
+.public-profile-avatar img{width:100%;height:100%;object-fit:cover}
+.public-profile-hero h1{font:600 24px 'Space Grotesk';margin:5px 0}
+.public-profile-hero p{font-size:11px;color:#8991a5;margin:3px 0}
+.public-profile-bio{max-width:520px;line-height:1.65}
+.public-platform-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.public-platform-list>div{display:grid;gap:5px;padding:12px;border:1px solid #252b3b;background:#0d111b;border-radius:8px}
+.public-platform-list b{font-size:11px}
+.public-platform-list span,.public-platform-list a{font-size:10px;color:#929aaf}
+.public-platform-list a{color:#a997ff;text-decoration:none}
+.friend-profile-link{color:inherit;text-decoration:none}
+.friend-profile-link:hover{color:#b9a7ff}
+@media(max-width:600px){.public-profile-hero{align-items:flex-start;flex-wrap:wrap}.public-platform-list{grid-template-columns:1fr}}
