@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Check, LoaderCircle, Search, UserPlus, Users, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -9,7 +9,7 @@ type Profile={id:string;username:string|null;display_name:string|null;avatar_url
 type Friendship={id:string;requester_id:string;addressee_id:string;status:string;requester?:Profile;addressee?:Profile};
 
 export default function FriendsPanel(){
- const supabase=createClient();
+ const supabase=useMemo(()=>createClient(),[]);
  const [uid,setUid]=useState("");
  const [query,setQuery]=useState("");
  const [results,setResults]=useState<Profile[]>([]);
@@ -41,7 +41,7 @@ export default function FriendsPanel(){
  useEffect(()=>{let live=true;(async()=>{const {data:{user}}=await supabase.auth.getUser();if(!user){window.location.href="/login";return;}if(live){setUid(user.id);await load(user.id);}})();return()=>{live=false;};},[supabase]);
  async function search(){
   setBusy(true);setError("");setNotice("");
-  const term=query.trim().replace(/^@/,"");
+  const term=query.trim().replace(/^@/,"").replace(/[,%()._*]/g,"");
   if(term.length<2){setResults([]);setBusy(false);return;}
   const {data,error:e}=await supabase.from("profiles").select("id,username,display_name,avatar_url,bio").or(`username.ilike.%${term}%,display_name.ilike.%${term}%`).neq("id",uid).limit(12);
   if(e)setError(e.message);else setResults((data||[]) as Profile[]);
