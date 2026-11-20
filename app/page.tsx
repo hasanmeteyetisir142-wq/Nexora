@@ -15,7 +15,7 @@ const nav = [
   { label: "Genel Bakış", icon: Home },
   { label: "Oyunları Keşfet", icon: Compass },
   { label: "Arkadaşlar", icon: Users, href: "/friends" },
-  { label: "Mesajlar", icon: MessageCircle },
+  { label: "Mesajlar", icon: MessageCircle, href: "/messages" },
   { label: "Topluluk", icon: Globe2 },
   { label: "Profilim", icon: UserRound, href: "/profile" },
 ];
