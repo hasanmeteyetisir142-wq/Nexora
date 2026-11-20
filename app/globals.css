@@ -231,3 +231,21 @@ button.platform-launch{cursor:pointer}
 .coming-soon-mini{font-size:8px;font-weight:800;letter-spacing:.5px;color:#b9a7ff;background:#9b82ff1c;padding:5px 6px;border-radius:5px;white-space:nowrap}
 .platform-details{border-top:1px solid #292f40;margin-top:15px;padding-top:15px}
 @media(max-width:650px){.platform-launch-grid{grid-template-columns:1fr}}
+
+
+/* Persistent workspace navigation for all signed-in sections */
+.workspace-shell{min-height:100vh}
+.workspace-sidebar .brand{padding-bottom:37px}
+.workspace-sidebar .nav-item{text-decoration:none}
+.workspace-sidebar .sidebar-bottom{margin-top:auto}
+.workspace-main{min-width:0}
+.workspace-main>.social-page{min-height:calc(100vh - 76px);background:transparent}
+.workspace-main .social-wrap,.workspace-main .messages-wrap{max-width:1120px;padding-top:30px}
+.workspace-main .social-heading{margin-top:0}
+.workspace-main .social-top{display:none}
+.workspace-topbar .workspace-home-link{color:#b6a5ff;text-decoration:none;font-size:11px;font-weight:700}
+.workspace-topbar .workspace-home-link:hover{color:#fff}
+.psn-profile-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:15px}
+.psn-profile-actions p{display:flex;align-items:flex-start;gap:7px;margin:0;color:#929aaf;font-size:10px;line-height:1.6}
+.social-secondary{display:inline-flex;align-items:center;gap:7px;border:1px solid #39324f;background:#211d35;color:#c3b5ff;border-radius:8px;padding:9px 12px;text-decoration:none;font-size:10px;font-weight:700;white-space:nowrap}
+@media(max-width:780px){.workspace-main>.social-page{min-height:calc(100vh - 64px)}.workspace-main .social-wrap,.workspace-main .messages-wrap{padding:24px 14px 55px}}
