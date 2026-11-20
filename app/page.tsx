@@ -81,6 +81,11 @@ export default function Dashboard() {
     router.refresh();
   };
   const [active, setActive] = useState("Genel Bakış");
+  useEffect(() => {
+    const view = new URLSearchParams(window.location.search).get("view");
+    if (view === "games") setActive("Oyunları Keşfet");
+    if (view === "community") setActive("Topluluk");
+  }, []);
   const [query, setQuery] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [joined, setJoined] = useState<string[]>([]);
