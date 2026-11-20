@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Check, LoaderCircle, Search, UserPlus, Users, X } from "lucide-react";
+import { Check, LoaderCircle, Search, UserPlus, Users, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 type Profile={id:string;username:string|null;display_name:string|null;avatar_url:string|null;bio?:string|null};
@@ -63,8 +63,7 @@ export default function FriendsPanel(){
  }
  const person=(p?:Profile)=>p?.display_name||p?.username||"Oyuncu";
  const avatar=(p?:Profile)=><div className="friend-person-avatar">{p?.avatar_url?<img src={p.avatar_url} alt=""/>:<span>{person(p).slice(0,1).toUpperCase()}</span>}</div>;
- return <main className="social-page"><header className="social-top"><Link href="/" className="social-back"><ArrowLeft size={17}/> Nexora'ya dön</Link><span>SOSYAL ALAN</span></header>
- <section className="social-wrap"><div className="social-heading"><div className="social-icon"><Users/></div><div><div className="social-eyebrow">EKİBİNİ KUR</div><h1>Arkadaşlar</h1><p>Oyuncuları bul, istek gönder ve ekibini oluştur.</p></div></div>
+ return <main className="social-page"><section className="social-wrap"><div className="social-heading"><div className="social-icon"><Users/></div><div><div className="social-eyebrow">EKİBİNİ KUR</div><h1>Arkadaşlar</h1><p>Oyuncuları bul, istek gönder ve ekibini oluştur.</p></div></div>
  <div className="social-card friend-search"><div className="social-search-row"><Search size={18}/><input value={query} onChange={e=>setQuery(e.target.value)} onKeyDown={e=>e.key==="Enter"&&search()} placeholder="Kullanıcı adı veya görünen ad ara..."/><button onClick={search} disabled={busy}>{busy?<LoaderCircle className="spin" size={16}/>: "Ara"}</button></div>
  {results.length>0&&<div className="friend-results">{results.map(p=><div className="friend-person" key={p.id}>{avatar(p)}<div className="friend-person-copy">{p.username ? <Link href={`/u/${p.username}`} className="friend-profile-link"><b>{person(p)}</b></Link> : <b>{person(p)}</b>}<span>@{p.username||"kullanici"}</span></div><button className="friend-action" onClick={()=>send(p.id)}><UserPlus size={15}/> Ekle</button></div>)}</div>}
  </div>
