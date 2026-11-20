@@ -52,3 +52,56 @@
 .public-features{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding-top:5px}.public-feature{border:1px solid #252b3b;background:linear-gradient(145deg,#141825,#10131d);border-radius:12px;padding:22px}.public-feature>svg{color:#ad9aff;width:22px;height:22px}.public-feature h3{font:600 16px 'Space Grotesk';margin:14px 0 7px}.public-feature p{color:#8991a5;font-size:11px;line-height:1.7;margin:0}.public-footer{max-width:1212px;margin:0 auto;padding:22px 42px 28px;border-top:1px solid #202433;display:flex;justify-content:space-between;color:#626b80;font-size:9px;letter-spacing:1px}
 @media(max-width:850px){.public-header{padding:0 20px}.public-nav{display:none}.public-hero{grid-template-columns:1fr;padding:65px 25px 35px}.public-visual{height:300px}.public-game-grid{grid-template-columns:repeat(2,1fr)}.public-games,.public-features{padding-left:25px;padding-right:25px}.public-footer{margin:0 25px;padding-left:0;padding-right:0}}
 @media(max-width:520px){.public-header{height:68px}.public-brand{font-size:16px}.public-actions{gap:12px}.public-login{font-size:10px}.public-signup{padding:9px 10px;font-size:10px}.public-hero{padding:55px 20px 25px}.public-hero h1{font-size:49px;letter-spacing:-2px}.public-hero-copy>p{font-size:12px}.public-hero-buttons{gap:15px}.public-visual{height:245px;transform:scale(.82);margin:-10px -20px}.public-section-title{align-items:flex-start;flex-direction:column}.public-game-grid{gap:8px}.public-game-card{padding:10px;gap:8px}.public-game-mark{width:34px;height:34px}.public-game-card b{font-size:9px}.public-features{grid-template-columns:1fr}.public-footer{font-size:8px;gap:12px;flex-wrap:wrap}}
+
+
+/* Nexora social profile and friends */
+.social-page{min-height:100vh;background:radial-gradient(ellipse at 70% -10%,#28204a55,transparent 38%),#090b12;color:#f2f4fa}
+.social-top{height:72px;border-bottom:1px solid #202433;display:flex;align-items:center;justify-content:space-between;padding:0 max(22px,calc((100vw - 1100px)/2));color:#687187;font-size:9px;font-weight:800;letter-spacing:1.5px}
+.social-back{display:flex;align-items:center;gap:9px;color:#b5a6ff;text-decoration:none;font-size:12px;letter-spacing:0;font-weight:700}
+.social-wrap{max-width:850px;margin:0 auto;padding:48px 24px 80px}
+.social-heading{display:flex;align-items:center;gap:17px;margin-bottom:25px}
+.social-icon{width:50px;height:50px;border-radius:14px;background:#9b82ff20;border:1px solid #9b82ff40;color:#b8a5ff;display:grid;place-items:center}
+.social-eyebrow{font-size:9px;font-weight:800;letter-spacing:1.7px;color:#a997ff}
+.social-heading h1{font:600 30px 'Space Grotesk';margin:5px 0}
+.social-heading p{font-size:12px;color:#8991a5;margin:0}
+.social-card{border:1px solid #252b3b;background:linear-gradient(145deg,#141825,#10131d);border-radius:13px;padding:20px;margin-bottom:15px}
+.profile-form{display:grid;gap:17px}
+.profile-form>label{display:grid;gap:8px;font-size:11px;font-weight:700;color:#c8ccda}
+.profile-form input,.profile-form textarea,.social-search-row input{width:100%;border:1px solid #30374a;background:#0d111c;border-radius:8px;padding:12px;color:#f4f4fa;font:12px 'DM Sans';outline:none;resize:vertical}
+.profile-form input:focus,.profile-form textarea:focus,.social-search-row input:focus{border-color:#9b82ff;box-shadow:0 0 0 3px #9b82ff1c}
+.profile-form input:disabled{opacity:.6;cursor:not-allowed}
+.profile-avatar-row{display:grid;grid-template-columns:64px auto 1fr;align-items:center;gap:14px;padding-bottom:17px;border-bottom:1px solid #252b3b}
+.profile-avatar{width:64px;height:64px;border-radius:18px;overflow:hidden;background:linear-gradient(140deg,#9a82ff,#4d3c9d);display:grid;place-items:center;font-size:24px;font-weight:800}
+.profile-avatar img,.friend-person-avatar img{width:100%;height:100%;object-fit:cover}
+.upload-avatar{display:inline-flex;align-items:center;gap:8px;border:1px solid #393450;background:#211d37;color:#c1b4ff;border-radius:8px;padding:10px 12px;font-size:11px;font-weight:700;cursor:pointer;width:max-content}
+.upload-avatar input{display:none}
+.profile-avatar-row small,.char-count{color:#727d93;font-size:9px}
+.username-input{display:flex;align-items:center;border:1px solid #30374a;background:#0d111c;border-radius:8px;padding-left:12px;color:#a997ff}
+.username-input input{border:0;background:transparent}
+.username-input:focus-within{border-color:#9b82ff;box-shadow:0 0 0 3px #9b82ff1c}
+.char-count{text-align:right}
+.social-primary,.social-search-row button{border:1px solid #a58dff;background:linear-gradient(130deg,#9b82ff,#765de0);border-radius:8px;color:#fff;padding:12px 15px;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:8px}
+.social-primary:disabled{opacity:.6}
+.social-alert{border-radius:8px;padding:11px 13px;font-size:11px;line-height:1.6}
+.social-alert.error{background:#5a242b55;border:1px solid #a34b5b;color:#ffb4bd}
+.social-alert.success{background:#1c4a3c55;border:1px solid #367f67;color:#a8f0d1}
+.social-search-row{display:flex;align-items:center;gap:12px;color:#8490a7}
+.social-search-row input{flex:1;min-width:0}
+.social-search-row button{min-width:70px}
+.friend-results{margin-top:14px;border-top:1px solid #252b3b}
+.friend-person{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #222838}
+.friend-person:last-child{border-bottom:0}
+.friend-person-avatar{width:38px;height:38px;border-radius:12px;flex-shrink:0;background:linear-gradient(140deg,#423b68,#23233d);color:#d1c4ff;display:grid;place-items:center;overflow:hidden;font-weight:800}
+.friend-person-copy{display:grid;gap:4px;flex:1;min-width:0}
+.friend-person-copy b{font-size:11px}
+.friend-person-copy span{font-size:9px;color:#7e879b}
+.friend-action,.friend-accept,.friend-reject{border:1px solid #3a3554;background:#211d37;color:#b8a5ff;border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:6px;font-size:10px;font-weight:700}
+.friend-accept{border-color:#2d604d;background:#18352d;color:#8ee0b7;padding:8px}
+.friend-reject{border-color:#49313c;background:#2b1b25;color:#e7a4b3;padding:8px}
+.friends-columns{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.social-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
+.social-card-head h2{font:600 15px 'Space Grotesk';margin:0}
+.social-card-head>span{border-radius:7px;background:#292440;color:#b9a9ff;padding:4px 8px;font-size:10px;font-weight:800}
+.social-empty{color:#7f899f;font-size:11px;line-height:1.7;margin:15px 0 3px}
+.friends-list-card{margin-top:15px}
+@media(max-width:650px){.social-wrap{padding:30px 16px 55px}.social-top{padding:0 17px}.social-heading h1{font-size:25px}.friends-columns{grid-template-columns:1fr}.profile-avatar-row{grid-template-columns:58px auto}.profile-avatar{width:58px;height:58px}.profile-avatar-row small{grid-column:1/-1}.social-card{padding:15px}.social-search-row{gap:8px}.social-search-row button{min-width:55px;padding:10px}}
