@@ -18,6 +18,7 @@ const nav = [
   { label: "Mesajlar", icon: MessageCircle, href: "/messages" },
   { label: "Topluluk", icon: Globe2 },
   { label: "Profilim", icon: UserRound, href: "/profile" },
+  { label: "Ayarlar", icon: Settings, href: "/settings" },
 ];
 const games = [
   { name: "VALORANT", genre: "Taktiksel FPS", tone: "red", mark: "V" },
@@ -94,7 +95,7 @@ export default function Dashboard() {
         <button className="nav-item" onClick={() => select("Başarımlar")}><Trophy size={18}/><span>Başarımlarım</span></button>
         <div className="sidebar-bottom">
           <div className="upgrade-card"><div className="upgrade-icon"><Zap size={17}/></div><strong>Nexora'yı keşfet.</strong><p>Oyun dünyanı tek bir yerde birleştir.</p><button onClick={() => select("Hesaplarım")}>Hesaplarını bağla <ArrowRight size={14}/></button></div>
-          <button className="nav-item settings" onClick={() => select("Ayarlar")}><Settings size={18}/><span>Ayarlar</span></button>
+          
           <div className="profile-mini"><div className="avatar avatar-user">{accountInitial}</div><div className="profile-text"><b>{accountName}</b><span>Nexora oyuncusu</span></div><button className="logout-mini" onClick={handleSignOut} disabled={signingOut} aria-label="Çıkış yap" title="Çıkış yap"><LogOut size={16}/><span>{signingOut ? "Çıkılıyor..." : "Çıkış yap"}</span></button></div>
         </div>
       </aside>
