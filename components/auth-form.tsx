@@ -16,12 +16,14 @@ export default function AuthForm({ mode }: Props) {
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (isSignup && !acceptedTerms) { setError("Devam etmek için Kullanım Koşulları ve Gizlilik Politikası'nı kabul etmelisin."); return; }
     setBusy(true);
     setError("");
     setMessage("");
@@ -32,7 +34,7 @@ export default function AuthForm({ mode }: Props) {
           email: email.trim(),
           password,
           options: {
-            data: { display_name: displayName.trim() },
+            data: { display_name: displayName.trim(), terms_accepted: true, terms_version: "2026-11-20", privacy_version: "2026-11-20" },
             emailRedirectTo: `${window.location.origin}/auth/callback`,
           },
         });
@@ -74,6 +76,7 @@ export default function AuthForm({ mode }: Props) {
           {isSignup && <label>Görünen ad<input value={displayName} onChange={e => setDisplayName(e.target.value)} placeholder="Oyuncu adın" minLength={2} maxLength={32} required autoComplete="nickname" /></label>}
           <label>E-posta<input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="ornek@eposta.com" required autoComplete="email" /></label>
           <label>Şifre<input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="En az 8 karakter" minLength={8} required autoComplete={isSignup ? "new-password" : "current-password"} /></label>
+          {isSignup && <label className="auth-terms"><input type="checkbox" checked={acceptedTerms} onChange={e => setAcceptedTerms(e.target.checked)} required /> <span><Link href="/terms" target="_blank">Kullanım Koşulları</Link> ve <Link href="/privacy" target="_blank">Gizlilik Politikası</Link>'nı okudum ve kabul ediyorum.</span></label>}
           {error && <div className="auth-alert auth-error" role="alert">{error}</div>}
           {message && <div className="auth-alert auth-success" role="status">{message}</div>}
           <button className="auth-submit" type="submit" disabled={busy}>{busy ? <LoaderCircle className="spin" size={17} /> : <>{isSignup ? "Ücretsiz hesap oluştur" : "Giriş yap"} <ArrowRight size={17} /></>}</button>
