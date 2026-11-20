@@ -20,15 +20,10 @@ const nav = [
   { label: "Profilim", icon: UserRound, href: "/profile" },
 ];
 const games = [
-  { name: "VALORANT", genre: "Taktiksel FPS", players: "128,4 B", tone: "red", mark: "V" },
-  { name: "Minecraft", genre: "Sandbox · Macera", players: "84,2 B", tone: "green", mark: "M" },
-  { name: "Fortnite", genre: "Battle Royale", players: "96,8 B", tone: "blue", mark: "F" },
-  { name: "Rocket League", genre: "Spor · Yarış", players: "32,1 B", tone: "orange", mark: "R" },
-];
-const friends = [
-  { name: "pixelkaan", game: "Minecraft", status: "Oyunda", color: "mint", initials: "PK" },
-  { name: "Luna.exe", game: "VALORANT", status: "Oyunda", color: "violet", initials: "L" },
-  { name: "MertCan", game: "Çevrimiçi", status: "Boşta", color: "amber", initials: "MC" },
+  { name: "VALORANT", genre: "Taktiksel FPS", tone: "red", mark: "V" },
+  { name: "Minecraft", genre: "Sandbox · Macera", tone: "green", mark: "M" },
+  { name: "Fortnite", genre: "Battle Royale", tone: "blue", mark: "F" },
+  { name: "Rocket League", genre: "Spor · Yarış", tone: "orange", mark: "R" },
 ];
 const platforms = [
   { name: "Steam", detail: "PC oyun kütüphanen", color: "steam", symbol: "S" },
@@ -36,6 +31,8 @@ const platforms = [
   { name: "Xbox", detail: "Xbox profilin", color: "xbox", symbol: "X" },
   { name: "Discord", detail: "Toplulukların ve sohbetlerin", color: "discord", symbol: "D" },
 ];
+
+type FriendSummary = { id: string; name: string; username: string | null; avatar_url: string | null };
 
 export default function Dashboard() {
   const router = useRouter();
@@ -45,6 +42,8 @@ export default function Dashboard() {
   const [accountName, setAccountName] = useState("Oyuncu");
   const [accountInitial, setAccountInitial] = useState("N");
   const [signingOut, setSigningOut] = useState(false);
+  const [friends, setFriends] = useState<FriendSummary[]>([]);
+  const [friendsLoaded, setFriendsLoaded] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -53,10 +52,17 @@ export default function Dashboard() {
       if (!active) return;
       setAuthenticated(Boolean(user));
       setAuthChecked(true);
-      if (!user) return;
+      if (!user) { setFriends([]); setFriendsLoaded(true); return; }
       const { data } = await supabase.from("profiles").select("display_name, username").eq("id", user.id).maybeSingle();
       const name = data?.display_name || data?.username || user.email?.split("@")[0] || "Oyuncu";
       if (active) { setAccountName(name); setAccountInitial(name.slice(0, 1).toUpperCase()); }
+      const { data: links } = await supabase.from("friendships").select("requester_id, addressee_id").eq("status", "accepted").or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`);
+      const friendIds = [...new Set((links || []).map(link => link.requester_id === user.id ? link.addressee_id : link.requester_id))];
+      if (friendIds.length) {
+        const { data: people } = await supabase.from("profiles").select("id, username, display_name, avatar_url").in("id", friendIds);
+        if (active) setFriends((people || []).map(person => ({ id: person.id, name: person.display_name || person.username || "Oyuncu", username: person.username, avatar_url: person.avatar_url })));
+      } else if (active) setFriends([]);
+      if (active) setFriendsLoaded(true);
     };
     void loadProfile();
     const { data: { subscription } } = supabase.auth.onAuthStateChange(() => { void loadProfile(); });
@@ -105,10 +111,10 @@ export default function Dashboard() {
           <div className="hero-card"><div className="hero-glow"/><div className="hero-copy"><div className="hero-tag"><Sparkles size={13}/> NEXORA'NIN DÜNYASI</div><h2>Oyun sadece<br/>başlangıç.</h2><p>Arkadaşlarınla buluş, topluluğunu keşfet,<br/>oyun dünyanı tek yerden yönet.</p><button onClick={() => select("Hesaplarım")}>Hesaplarını bağla <ArrowRight size={15}/></button></div><div className="hero-art"><div className="orbit orbit-one"/><div className="orbit orbit-two"/><div className="orb-core"><Sparkles size={42}/></div><div className="float-chip chip-one"><Gamepad2 size={16}/> PLAY</div><div className="float-chip chip-two"><Users size={16}/> CONNECT</div><div className="float-chip chip-three"><Trophy size={16}/> WIN</div></div><div className="hero-index">01 <span>/ 03</span></div></div>
 
           <div className="section-heading"><div><div className="eyebrow">CANLI AKIŞ</div><h3>Oyun dünyanda neler oluyor?</h3></div><button className="text-btn" onClick={() => select("Topluluk")}>Tümünü gör <ArrowRight size={15}/></button></div>
-          <div className="stats-grid"><div className="stat-card"><div className="stat-icon purple"><Users size={18}/></div><span>Arkadaşların</span><strong>3 <small>/ 12</small></strong><p><i className="tiny-green"/> 2 kişi şu an oyunda</p></div><div className="stat-card"><div className="stat-icon cyan"><Gamepad2 size={18}/></div><span>Takip ettiğin oyunlar</span><strong>08</strong><p>Keşfedilecek çok şey var</p></div><div className="stat-card"><div className="stat-icon gold"><Trophy size={18}/></div><span>Toplam başarım</span><strong>24</strong><p>Sonraki seviye yakında</p></div><div className="stat-card"><div className="stat-icon pink"><Activity size={18}/></div><span>Bu haftaki aktivite</span><strong>12<small> saat</small></strong><p>Geçen haftaya göre +%18</p></div></div>
+          <div className="stats-grid"><div className="stat-card"><div className="stat-icon purple"><Users size={18}/></div><span>Arkadaşların</span><strong>{friends.length}</strong><p>Gerçek arkadaşlık listen</p></div><div className="stat-card"><div className="stat-icon cyan"><Gamepad2 size={18}/></div><span>Oyun hesapları</span><strong>Yakında</strong><p>Platform bağlantıları henüz etkin değil</p></div><div className="stat-card"><div className="stat-icon gold"><Trophy size={18}/></div><span>Başarımlar</span><strong>Yakında</strong><p>Başarım sistemi hazırlanıyor</p></div><div className="stat-card"><div className="stat-icon pink"><Activity size={18}/></div><span>Oyun aktivitesi</span><strong>—</strong><p>Henüz aktivite verisi toplanmıyor</p></div></div>
 
-          <div className="two-column"><div className="panel games-panel"><div className="panel-head"><div><div className="eyebrow">SANA ÖZEL</div><h3>Popüler oyunlar</h3></div><button className="round-arrow" onClick={() => select("Oyunları Keşfet")}><ArrowRight size={17}/></button></div><div className="game-list">{filteredGames.map(game => <div className="game-row" key={game.name}><div className={`game-cover ${game.tone}`}>{game.mark}</div><div className="game-info"><b>{game.name}</b><span>{game.genre}</span></div><div className="player-count"><i className="tiny-green"/>{game.players}</div><button className="game-add" onClick={() => setJoined(old => old.includes(game.name) ? old.filter(x => x !== game.name) : [...old,game.name])}>{joined.includes(game.name) ? "Eklendi" : <Plus size={17}/>}</button></div>)}{filteredGames.length === 0 && <p className="empty-state">Bu isimde oyun bulamadık.</p>}</div></div>
-          <div className="panel friends-panel"><div className="panel-head"><div><div className="eyebrow">EKİBİN</div><h3>Arkadaşların</h3></div><button className="text-btn" onClick={() => select("Arkadaşlar")}>Tümü <ArrowRight size={14}/></button></div><div className="friend-list">{friends.map(friend => <div className="friend-row" key={friend.name}><div className={`avatar friend-avatar ${friend.color}`}>{friend.initials}<i/></div><div className="friend-info"><b>{friend.name}</b><span>{friend.game}</span></div><span className={`status ${friend.status === "Oyunda" ? "playing" : ""}`}>{friend.status}</span></div>)}</div><button className="invite-btn" onClick={() => setNotice("Davet bağlantısı yakında kullanılabilecek.")}><Plus size={16}/> Arkadaş davet et</button></div></div>
+          <div className="two-column"><div className="panel games-panel"><div className="panel-head"><div><div className="eyebrow">SANA ÖZEL</div><h3>Popüler oyunlar</h3></div><button className="round-arrow" onClick={() => select("Oyunları Keşfet")}><ArrowRight size={17}/></button></div><div className="game-list">{filteredGames.map(game => <div className="game-row" key={game.name}><div className={`game-cover ${game.tone}`}>{game.mark}</div><div className="game-info"><b>{game.name}</b><span>{game.genre}</span></div><button className="game-add" onClick={() => setJoined(old => old.includes(game.name) ? old.filter(x => x !== game.name) : [...old,game.name])}>{joined.includes(game.name) ? "Eklendi" : <Plus size={17}/>}</button></div>)}{filteredGames.length === 0 && <p className="empty-state">Bu isimde oyun bulamadık.</p>}</div></div>
+          <div className="panel friends-panel"><div className="panel-head"><div><div className="eyebrow">EKİBİN</div><h3>Arkadaşların</h3></div><button className="text-btn" onClick={() => select("Arkadaşlar")}>Tümü <ArrowRight size={14}/></button></div><div className="friend-list">{!friendsLoaded ? <p className="empty-state">Arkadaşların yükleniyor…</p> : friends.length === 0 ? <p className="empty-state">Henüz arkadaşın yok. Oyuncu bulmak için Arkadaşlar bölümüne git.</p> : friends.map(friend => <div className="friend-row" key={friend.id}><div className="avatar friend-avatar">{friend.avatar_url ? <img src={friend.avatar_url} alt="" /> : friend.name.slice(0, 1).toUpperCase()}</div><div className="friend-info"><b>{friend.name}</b><span>{friend.username ? `@${friend.username}` : "Nexora oyuncusu"}</span></div></div>)}</div><button className="invite-btn" onClick={() => select("Arkadaşlar")}><Plus size={16}/> Arkadaş bul</button></div></div>
 
           <div className="section-heading accounts-heading"><div><div className="eyebrow">TEK MERKEZ</div><h3>Hesaplarını bağla</h3><p>Oyun platformlarını Nexora ile bir araya getir.</p></div><button className="text-btn" onClick={() => select("Hesaplarım")}>Tüm platformlar <ArrowRight size={15}/></button></div>
           <div className="platform-grid">{platforms.map(p => <button className="platform-card" key={p.name} onClick={() => {setActive("Hesaplarım");setNotice(p.name + " bağlantısı için resmi giriş entegrasyonu hazırlanıyor.");}}><div className={`platform-logo ${p.color}`}>{p.symbol}</div><div><b>{p.name}</b><span>{p.detail}</span></div><span className="connect-plus"><Plus size={17}/></span></button>)}</div>
