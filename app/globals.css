@@ -249,3 +249,12 @@ button.platform-launch{cursor:pointer}
 .psn-profile-actions p{display:flex;align-items:flex-start;gap:7px;margin:0;color:#929aaf;font-size:10px;line-height:1.6}
 .social-secondary{display:inline-flex;align-items:center;gap:7px;border:1px solid #39324f;background:#211d35;color:#c3b5ff;border-radius:8px;padding:9px 12px;text-decoration:none;font-size:10px;font-weight:700;white-space:nowrap}
 @media(max-width:780px){.workspace-main>.social-page{min-height:calc(100vh - 64px)}.workspace-main .social-wrap,.workspace-main .messages-wrap{padding:24px 14px 55px}}
+
+
+.discover-game-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:22px}
+.discover-game-card{display:flex;align-items:center;gap:12px;min-width:0;padding:15px;border:1px solid #252b3b;background:linear-gradient(145deg,#141825,#10131d);border-radius:11px}
+.discover-game-card>div:nth-child(2){display:grid;gap:5px;min-width:0;flex:1}
+.discover-game-card b{font:600 13px 'Space Grotesk'}
+.discover-game-card span{font-size:10px;color:#8991a5}
+.discover-game-card button{border:1px solid #55477f;background:#29223f;color:#c6b8ff;border-radius:7px;padding:8px 10px;font-size:10px;font-weight:700}
+@media(max-width:600px){.discover-game-grid{grid-template-columns:1fr}.discover-game-card{padding:12px}.discover-game-card button{font-size:9px;padding:7px}}
