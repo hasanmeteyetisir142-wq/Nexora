@@ -14,7 +14,7 @@ export default function PublicHome() {
   return (
     <main className="public-shell">
       <header className="public-header">
-        <Link href="/" className="public-brand"><span><Sparkles size={19}/></span>NEXORA <small>BETA</small></Link>
+        <Link href="/" className="public-brand"><span><Sparkles size={19}/></span>NEXORA</Link>
         <nav className="public-nav"><a href="#kesfet">Keşfet</a><a href="#ozellikler">Özellikler</a></nav>
         <div className="public-actions"><Link className="public-login" href="/login">Giriş yap</Link><Link className="public-signup" href="/signup">Ücretsiz katıl <ArrowRight size={15}/></Link></div>
       </header>
