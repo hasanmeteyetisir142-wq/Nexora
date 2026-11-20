@@ -8,15 +8,16 @@ import {
   Activity, ArrowRight, Bell, ChevronDown, Compass, Gamepad2, Headphones,
   Home, MessageCircle, Plus, Search, Settings, ShieldCheck, Sparkles,
   Swords, Trophy, Users, Wallet, Zap, Menu, X, MoreHorizontal, Play,
-  Radio, Globe2, CircleDot, LogOut
+  Radio, Globe2, CircleDot, LogOut, UserRound
 } from "lucide-react";
 
 const nav = [
   { label: "Genel Bakış", icon: Home },
   { label: "Oyunları Keşfet", icon: Compass },
-  { label: "Arkadaşlar", icon: Users, count: "3" },
-  { label: "Mesajlar", icon: MessageCircle, count: "2" },
+  { label: "Arkadaşlar", icon: Users, href: "/friends" },
+  { label: "Mesajlar", icon: MessageCircle },
   { label: "Topluluk", icon: Globe2 },
+  { label: "Profilim", icon: UserRound, href: "/profile" },
 ];
 const games = [
   { name: "VALORANT", genre: "Taktiksel FPS", players: "128,4 B", tone: "red", mark: "V" },
@@ -75,7 +76,7 @@ export default function Dashboard() {
   const [notice, setNotice] = useState("");
   const filteredGames = games.filter(g => g.name.toLowerCase().includes(query.toLowerCase()));
 
-  const select = (label: string) => { setActive(label); setMobileOpen(false); };
+  const select = (label: string) => { const target = nav.find(item => item.label === label); if (target?.href) { router.push(target.href); return; } setActive(label); setMobileOpen(false); };
   return (
     <main className="shell">
       <aside className={`sidebar ${mobileOpen ? "sidebar-open" : ""}`}>
