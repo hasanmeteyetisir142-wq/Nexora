@@ -1,9 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
-import Link from "next/link";
 import { ArrowLeft, LoaderCircle, MessageCircle, Send, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import WorkspaceShell from "@/components/workspace-shell";
 
 type Person = { id: string; username: string | null; display_name: string | null; avatar_url: string | null };
 type Message = { id: string; sender_id: string; recipient_id: string; body: string; created_at: string };
@@ -76,8 +76,7 @@ export default function MessagesPage() {
   }
 
   const display = (p: Person) => p.display_name || p.username || "Oyuncu";
-  return <main className="social-page">
-    <header className="social-top"><Link href="/" className="social-back"><ArrowLeft size={17}/> Nexora'ya dön</Link><span>ÖZEL MESAJLAR</span></header>
+  return <WorkspaceShell><main className="social-page">
     <section className="messages-wrap">
       <div className="social-heading"><div className="social-icon"><MessageCircle/></div><div><div className="social-eyebrow">EKİBİNLE İLETİŞİMDE KAL</div><h1>Mesajlar</h1><p>Yalnızca kabul ettiğin arkadaşlarınla özel sohbet et.</p></div></div>
       <div className="messages-layout">
@@ -96,5 +95,5 @@ export default function MessagesPage() {
         </section>
       </div>
     </section>
-  </main>;
+  </main></WorkspaceShell>;
 }
