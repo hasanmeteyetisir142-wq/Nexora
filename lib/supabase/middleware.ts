@@ -26,12 +26,8 @@ export async function updateSession(request: NextRequest) {
   const signedIn = Boolean(data?.claims);
   const path = request.nextUrl.pathname;
 
-  if (!signedIn && path === "/") {
-    const target = request.nextUrl.clone();
-    target.pathname = "/login";
-    return NextResponse.redirect(target);
-  }
-
+  // Ana sayfa herkese açık kalır. Hesap gerektiren işlemler uygulama içinde
+  // ayrıca oturum kontrolü yapar; giriş/kayıt sayfaları da ziyaretçilere açıktır.
   if (signedIn && (path === "/login" || path === "/signup")) {
     const target = request.nextUrl.clone();
     target.pathname = "/";
