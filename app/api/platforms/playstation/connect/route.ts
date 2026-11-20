@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,8 +13,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "PSN Online ID 3-16 karakter olmalı; harfle başlamalı ve yalnızca harf, rakam, tire veya alt çizgi içermeli." }, { status: 400 });
     }
 
-    const admin = createAdminClient();
-    const { data, error } = await admin.from("platform_accounts").upsert({
+    const { data, error } = await supabase.from("platform_accounts").upsert({
       user_id: user.id,
       platform: "playstation",
       platform_user_id: onlineId,
