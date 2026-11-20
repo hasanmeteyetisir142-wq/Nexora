@@ -82,7 +82,7 @@ export default function Dashboard() {
       <aside className={`sidebar ${mobileOpen ? "sidebar-open" : ""}`}>
         <div className="brand"><div className="brand-mark"><Sparkles size={19}/></div><span>NEXORA</span><span className="brand-beta">BETA</span><button className="mobile-close" onClick={() => setMobileOpen(false)}><X size={19}/></button></div>
         <div className="side-label">MENÜ</div>
-        <nav className="nav-list">{nav.map(item => <button key={item.label} onClick={() => select(item.label)} className={`nav-item ${active === item.label ? "active" : ""}`}><item.icon size={18}/><span>{item.label}</span>{item.count && <small>{item.count}</small>}</button>)}</nav>
+        <nav className="nav-list">{nav.map(item => <button key={item.label} onClick={() => select(item.label)} className={`nav-item ${active === item.label ? "active" : ""}`}><item.icon size={18}/><span>{item.label}</span></button>)}</nav>
         <div className="side-label spaces-label">KÜTÜPHANEM</div>
         <button className="nav-item" onClick={() => select("Oyunlarım")}><Gamepad2 size={18}/><span>Oyunlarım</span></button>
         <button className="nav-item" onClick={() => select("Başarımlar")}><Trophy size={18}/><span>Başarımlarım</span></button>
