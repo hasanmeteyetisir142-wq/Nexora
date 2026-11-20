@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, ExternalLink, Gamepad2, LoaderCircle, ShieldCheck, Unlink } from "lucide-react";
+import { ArrowLeft, Gamepad2, LoaderCircle, ShieldCheck, Unlink, ChevronDown } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import DiscordConnection from "@/components/discord-connection";
 
@@ -14,12 +14,29 @@ type PlatformAccount = {
   profile_url: string | null;
 };
 
+async function readApiResponse(response: Response) {
+  const raw = await response.text();
+  let payload: any;
+  try {
+    payload = raw ? JSON.parse(raw) : {};
+  } catch {
+    throw new Error(
+      response.status === 404
+        ? "PlayStation bağlantı servisi henüz yayına alınmamış. Birkaç dakika sonra sayfayı yenile."
+        : "Sunucudan beklenmeyen bir yanıt geldi. Sayfayı yenileyip tekrar dene."
+    );
+  }
+  if (!response.ok) throw new Error(payload?.error || "PlayStation ID kaydedilemedi.");
+  return payload;
+}
+
 export default function LibraryPanel() {
   const supabase = useMemo(() => createClient(), []);
   const [account, setAccount] = useState<PlatformAccount | null>(null);
   const [onlineId, setOnlineId] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
 
@@ -38,8 +55,9 @@ export default function LibraryPanel() {
         .eq("platform", "playstation")
         .maybeSingle();
       if (!active) return;
-      if (queryError) setError("PlayStation bağlantısı kontrol edilemedi. Sayfayı yenilemeyi dene.");
+      if (queryError) setError("PlayStation ID bilgisi kontrol edilemedi. Sayfayı yenilemeyi dene.");
       setAccount(data as PlatformAccount | null);
+      setExpanded(Boolean(data));
       setLoading(false);
     }
     void loadAccount();
@@ -59,14 +77,14 @@ export default function LibraryPanel() {
     try {
       const response = await fetch("/api/platforms/playstation/connect", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        cache: "no-store",
         body: JSON.stringify({ onlineId: value }),
       });
-      const payload = await response.json();
-      if (!response.ok) throw new Error(payload.error || "PlayStation ID kaydedilemedi.");
+      const payload = await readApiResponse(response);
       setAccount(payload.account as PlatformAccount);
       setOnlineId("");
-      setNotice("PSN Online ID Nexora profiline eklendi.");
+      setNotice("PSN Online ID profil bilgine eklendi. Henüz Sony tarafından doğrulanmış değil.");
     } catch (e) {
       setError(e instanceof Error ? e.message : "PlayStation ID kaydedilemedi. Tekrar dene.");
     } finally {
@@ -80,10 +98,10 @@ export default function LibraryPanel() {
     if (!user) return;
     const { error: removeError } = await supabase.from("platform_accounts")
       .delete().eq("user_id", user.id).eq("platform", "playstation");
-    if (removeError) setError("PlayStation bağlantısı kaldırılamadı. Tekrar dene.");
+    if (removeError) setError("PlayStation ID kaldırılamadı. Tekrar dene.");
     else {
       setAccount(null);
-      setNotice("PlayStation ID profilinden kaldırıldı.");
+      setNotice("PSN Online ID profilinden kaldırıldı.");
       setError("");
     }
   }
@@ -96,28 +114,44 @@ export default function LibraryPanel() {
       {error && <div className="social-alert error">{error}</div>}
 
       <section className="social-card platform-connection-card">
-        <div className="social-card-head"><h2>PlayStation hesabı</h2><span>{account ? "Profilde gösteriliyor" : "Bağlı değil"}</span></div>
-        {loading ? <p className="social-empty"><LoaderCircle className="spin" size={17}/> Hesap kontrol ediliyor...</p> : account ? <div className="steam-account-row">
-          <div className="steam-avatar"><Gamepad2 size={22}/></div>
-          <div className="steam-account-copy"><b>{account.display_name || account.platform_user_id}</b><span>PSN Online ID: {account.platform_user_id}</span><small>Bu bilgi kullanıcı tarafından girildi; Sony üzerinden hesap sahipliği doğrulanmadı.</small></div>
-          <button className="friend-reject" onClick={disconnectPlayStation} title="Profilinden kaldır"><Unlink size={16}/></button>
-        </div> : <form className="psn-connect-form" onSubmit={connectPlayStation}>
-          <p>PSN Online ID'ni girerek PlayStation hesabını profilinde gösterebilirsin. Bu işlem Sony hesabına giriş yapmaz ve oyun listesini otomatik getirmez.</p>
-          <label htmlFor="psn-online-id">PSN Online ID</label>
-          <input id="psn-online-id" name="onlineId" autoComplete="off" maxLength={16} value={onlineId} onChange={(event) => setOnlineId(event.target.value)} placeholder="Örn. Oyuncu_123" />
-          <button className="social-primary" type="submit" disabled={saving || !onlineId.trim()}>{saving ? <><LoaderCircle className="spin" size={16}/> Kaydediliyor...</> : "PlayStation ID'yi ekle"}</button>
-        </form>}
+        <div className="social-card-head"><h2>Platform bağlantıları</h2><span>Hesapların</span></div>
+        <div className="platform-launch-grid">
+          <button className={expanded ? "platform-launch active" : "platform-launch"} type="button" onClick={() => setExpanded(value => !value)} aria-expanded={expanded}>
+            <span className="platform-launch-logo ps-logo"><Gamepad2 size={22}/></span>
+            <span className="platform-launch-copy"><b>PlayStation</b><small>{loading ? "Kontrol ediliyor..." : account ? "PSN ID eklendi" : "Bağlantı ayarları"}</small></span>
+            <ChevronDown className={expanded ? "platform-chevron open" : "platform-chevron"} size={17}/>
+          </button>
+          <div className="platform-launch disabled" aria-disabled="true">
+            <span className="platform-launch-logo steam-logo">S</span>
+            <span className="platform-launch-copy"><b>Steam</b><small>Yakında</small></span>
+            <span className="coming-soon-mini">YAKINDA</span>
+          </div>
+          <div className="platform-launch disabled" aria-disabled="true">
+            <span className="platform-launch-logo xbox-logo">X</span>
+            <span className="platform-launch-copy"><b>Xbox</b><small>Yakında</small></span>
+            <span className="coming-soon-mini">YAKINDA</span>
+          </div>
+        </div>
+
+        {expanded && <div className="platform-details">
+          {loading ? <p className="social-empty"><LoaderCircle size={16}/> Hesap bilgisi yükleniyor...</p> : account ? <div className="steam-account-row">
+            <div className="steam-avatar"><Gamepad2 size={22}/></div>
+            <div className="steam-account-copy"><b>PSN Online ID: {account.platform_user_id}</b><span>Bu ID senin tarafından girildi; Sony doğrulaması yapılmadı.</span></div>
+            <button className="friend-reject" onClick={disconnectPlayStation} title="ID'yi kaldır"><Unlink size={16}/></button>
+          </div> : <form className="psn-connect-form" onSubmit={connectPlayStation}>
+            <p>PSN Online ID'ni buraya yaz. Bu işlem Sony hesabına giriş yapmaz; hesabın sana ait olduğunu doğrulayamaz ve PlayStation oyunlarını getirmez.</p>
+            <label htmlFor="psn-online-id">PSN Online ID</label>
+            <input id="psn-online-id" name="onlineId" autoComplete="off" maxLength={16} value={onlineId} onChange={(event) => setOnlineId(event.target.value)} placeholder="Örn. Oyuncu_123" />
+            <button className="social-primary" type="submit" disabled={saving || !onlineId.trim()}>{saving ? <><LoaderCircle size={16}/> Kaydediliyor...</> : "PSN ID'yi kaydet"}</button>
+          </form>}
+          <p className="privacy-note"><ShieldCheck size={14}/> Doğrulanmamış ID'ler resmi PlayStation hesap bağlantısı gibi gösterilmez. Profil gizlilik ayarlarından platform bilgilerini kapatabilirsin.</p>
+        </div>}
       </section>
 
       <section className="social-card upcoming-platforms">
-        <div className="social-card-head"><h2>Diğer platformlar</h2><span>Yakında</span></div>
-        <div className="platform-coming-grid">
-          <div><b>Steam</b><span>Steam hesabı ve oyun kütüphanesi entegrasyonu yakında.</span></div>
-          <div><b>Xbox</b><span>Microsoft / Xbox hesabı entegrasyonu yakında.</span></div>
-        </div>
-        <p className="privacy-note"><ShieldCheck size={14}/> Platform bilgilerini istediğin zaman profilinden kaldırabilirsin. PlayStation ID şu anda manuel olarak eklenir; doğrulanmış hesap bağlantısı değildir.</p>
+        <div className="social-card-head"><h2>Discord</h2><span>Bağlantı alanı</span></div>
+        <DiscordConnection />
       </section>
-      <DiscordConnection />
     </section>
   </main>;
 }
