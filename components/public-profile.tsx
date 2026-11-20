@@ -13,6 +13,13 @@ type Data = {
   is_owner: boolean;
 };
 
+const platformName: Record<string, string> = {
+  playstation: "PlayStation",
+  steam: "Steam",
+  xbox: "Xbox",
+  discord: "Discord",
+};
+
 export default function PublicProfile({ username }: { username: string }) {
   const [data, setData] = useState<Data | null>(null);
   const [error, setError] = useState("");
@@ -22,7 +29,10 @@ export default function PublicProfile({ username }: { username: string }) {
     let active = true;
     fetch(`/api/profiles/${encodeURIComponent(username)}`, { cache: "no-store" })
       .then(async response => {
-        const payload = await response.json();
+        const raw = await response.text();
+        let payload: any;
+        try { payload = raw ? JSON.parse(raw) : {}; }
+        catch { throw new Error("Profil servisi beklenmeyen bir yanıt verdi. Yeniden dene."); }
         if (!response.ok) throw new Error(payload.error || "Profil yüklenemedi.");
         return payload as Data;
       })
@@ -45,16 +55,16 @@ export default function PublicProfile({ username }: { username: string }) {
         </section>
         <section className="social-card">
           <div className="social-card-head"><h2><ShieldCheck size={17}/> Bağlı platformlar</h2></div>
-          {!data.visibility.platforms ? <p className="social-empty">Bu oyuncu bağlı platformlarını paylaşmıyor.</p> : data.platforms.length ? <div className="public-platform-list">{data.platforms.map(p => <div key={p.platform}><b>{p.display_name || p.platform}</b><span>{p.platform}</span>{p.profile_url && <a href={p.profile_url} target="_blank" rel="noreferrer">Profili aç</a>}</div>)}</div> : <p className="social-empty">Henüz bağlı platform yok.</p>}
+          {!data.visibility.platforms ? <p className="social-empty">Bu oyuncu platform bilgilerini gizlemiştir.</p> : data.platforms.length ? <div className="public-platform-list">{data.platforms.map(p => <div key={p.platform}><b>{platformName[p.platform] || p.platform}</b><span>{p.platform === "playstation" ? `PSN Online ID: ${p.display_name || "Belirtilmemiş"} · Kullanıcı beyanı, doğrulanmadı` : p.display_name || "Bağlı"}</span>{p.profile_url && <a href={p.profile_url} target="_blank" rel="noreferrer">Profili aç</a>}</div>)}</div> : <p className="social-empty">Henüz bağlı platform yok.</p>}
         </section>
         <section className="social-card">
           <div className="social-card-head"><h2><Gamepad2 size={17}/> Oyun kütüphanesi</h2></div>
-          {!data.visibility.library ? <p className="social-empty">Bu oyuncu oyun kütüphanesini paylaşmıyor.</p> : data.games.length ? <div className="steam-game-grid">{data.games.map(game => <article className="steam-game-card" key={game.appid}>{game.img_icon_url ? <img src={`https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`} alt=""/> : <div className="steam-game-placeholder"><Gamepad2/></div>}<div><b>{game.name}</b><span>{Math.round((game.playtime_forever || 0)/60)} saat oynandı</span></div></article>)}</div> : <p className="social-empty">{data.library_message || "Paylaşılacak oyun bulunamadı."}</p>}
+          {!data.visibility.library ? <p className="social-empty">Bu oyuncu oyun kütüphanesini gizlemiştir.</p> : data.games.length ? <div className="steam-game-grid">{data.games.map(game => <article className="steam-game-card" key={game.appid}>{game.img_icon_url ? <img src={`https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`} alt=""/> : <div className="steam-game-placeholder"><Gamepad2/></div>}<div><b>{game.name}</b><span>{Math.round((game.playtime_forever || 0)/60)} saat oynandı</span></div></article>)}</div> : <p className="social-empty">{data.library_message || "Paylaşılacak oyun bulunamadı."}</p>}
         </section>
         <section className="social-card">
           <div className="social-card-head"><h2><Trophy size={17}/> Başarımlar ve çevrim içi durumu</h2></div>
-          <p className="social-empty">{!data.visibility.achievements ? "Başarımlar bu oyuncu tarafından gizlenmiş." : "Başarım entegrasyonu henüz etkin değil; veri uydurulmaz."}</p>
-          <p className="social-empty">{!data.visibility.online_status ? "Çevrim içi durumu gizlenmiş." : "Gerçek zamanlı platform durumu henüz desteklenmiyor."}</p>
+          <p className="social-empty">{!data.visibility.achievements ? "Başarımlar bu oyuncu tarafından gizlenmiştir." : "Başarım entegrasyonu henüz etkin değil; veri uydurulmaz."}</p>
+          <p className="social-empty">{!data.visibility.online_status ? "Çevrim içi durumu gizlenmiştir." : "Gerçek zamanlı platform durumu henüz desteklenmiyor."}</p>
         </section>
       </>}
     </section>
