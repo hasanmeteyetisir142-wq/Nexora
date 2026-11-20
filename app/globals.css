@@ -105,3 +105,35 @@
 .social-empty{color:#7f899f;font-size:11px;line-height:1.7;margin:15px 0 3px}
 .friends-list-card{margin-top:15px}
 @media(max-width:650px){.social-wrap{padding:30px 16px 55px}.social-top{padding:0 17px}.social-heading h1{font-size:25px}.friends-columns{grid-template-columns:1fr}.profile-avatar-row{grid-template-columns:58px auto}.profile-avatar{width:58px;height:58px}.profile-avatar-row small{grid-column:1/-1}.social-card{padding:15px}.social-search-row{gap:8px}.social-search-row button{min-width:55px;padding:10px}}
+
+
+/* Nexora private messages beta */
+.messages-wrap{max-width:1120px;margin:0 auto;padding:36px 28px 60px}
+.messages-layout{display:grid;grid-template-columns:280px minmax(0,1fr);gap:18px;min-height:560px}
+.messages-people{padding:16px;align-self:stretch}
+.messages-people .social-card-head h2{display:flex;align-items:center;gap:8px}
+.message-person{width:100%;display:flex;align-items:center;gap:11px;padding:11px 9px;border:0;border-radius:10px;background:transparent;color:#eef0fa;text-align:left;cursor:pointer}
+.message-person:hover,.message-person.selected{background:#a18aff18}
+.message-person-copy{display:grid;gap:4px;min-width:0}
+.message-person-copy b{font-size:13px;overflow:hidden;text-overflow:ellipsis}
+.message-person-copy small{font-size:11px;color:#838ba1}
+.messages-chat{display:flex;flex-direction:column;min-width:0;overflow:hidden;padding:0}
+.messages-chat-head{display:flex;align-items:center;gap:11px;padding:17px 20px;border-bottom:1px solid #292d3d}
+.messages-chat-head>div{display:grid;gap:4px}
+.messages-chat-head b{font-size:14px;color:#f4f3fb}
+.messages-chat-head small{font-size:11px;color:#8d95aa}
+.messages-stream{display:flex;flex:1;min-height:390px;max-height:560px;overflow:auto;flex-direction:column;gap:10px;padding:20px}
+.message-bubble{max-width:min(78%,520px);align-self:flex-start;background:#202437;border:1px solid #30364b;border-radius:14px 14px 14px 4px;padding:10px 13px;color:#f1f2fa}
+.message-bubble.mine{align-self:flex-end;background:#382c60;border-color:#59458d;border-radius:14px 14px 4px 14px}
+.message-bubble p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;line-height:1.5}
+.message-bubble time{display:block;text-align:right;color:#a5a7bd;font-size:10px;margin-top:5px}
+.messages-compose{display:flex;gap:10px;padding:14px;border-top:1px solid #292d3d}
+.messages-compose input{flex:1;min-width:0;background:#111522;border:1px solid #34394d;border-radius:10px;padding:12px 14px;color:#fff;outline:none}
+.messages-compose input:focus{border-color:#9479ef}
+.messages-compose button{display:flex;align-items:center;gap:8px;border:0;border-radius:10px;background:#8064df;color:#fff;padding:0 16px;font-weight:700;cursor:pointer}
+.messages-compose button:disabled{opacity:.5;cursor:not-allowed}
+.messages-empty{margin:auto;text-align:center;color:#9299ad;padding:36px}
+.messages-empty svg{color:#a48aff}
+.messages-empty h2{font-size:18px;color:#f3f1fb;margin:12px 0 6px}
+.messages-empty p{font-size:12px;line-height:1.6}
+@media(max-width:760px){.messages-wrap{padding:24px 14px}.messages-layout{grid-template-columns:1fr;min-height:0}.messages-people{max-height:250px;overflow:auto}.messages-stream{min-height:300px;max-height:430px}.messages-chat{min-height:460px}}
