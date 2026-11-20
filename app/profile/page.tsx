@@ -1,2 +1,3 @@
 import ProfilePanel from "@/components/profile-panel";
-export default function ProfilePage(){return <ProfilePanel/>;}
+import WorkspaceShell from "@/components/workspace-shell";
+export default function ProfilePage(){return <WorkspaceShell><ProfilePanel/></WorkspaceShell>;}
