@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 type Visibility = "public" | "friends" | "selected" | "private";
 function canView(value: unknown, ownerId: string, viewerId: string, selected: unknown, friends: Set<string>) {
@@ -26,7 +27,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   if (!profile) return NextResponse.json({ error: "Oyuncu bulunamadı." }, { status: 404 });
 
   const ownerId = profile.id as string;
-  const settings = (profile.privacy_settings || {}) as Record<string, unknown>;
+  const admin = createAdminClient();
+  const { data: privacyRow, error: privacyError } = await admin.from("profile_privacy_settings").select("settings").eq("user_id", profile.id).maybeSingle();
+  if (privacyError) return NextResponse.json({ error: "Gizlilik ayarları alınamadı." }, { status: 500 });
+  const settings = (privacyRow?.settings || {}) as Record<string, unknown>;
   const selected = settings.selected_users;
   const { data: friendshipRows } = await supabase.from("friendships")
     .select("requester_id,addressee_id")
@@ -42,7 +46,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
   let platforms: Array<{ platform: string; display_name: string | null; avatar_url: string | null; profile_url: string | null }> = [];
   if (platformsVisible) {
-    const { data } = await supabase.from("platform_accounts")
+    const { data } = await admin.from("platform_accounts")
       .select("platform,display_name,avatar_url,profile_url")
       .eq("user_id", ownerId);
     platforms = data || [];
@@ -52,7 +56,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   let libraryMessage = "";
   if (libraryVisible) {
     try {
-      const admin = createAdminClient();
       const { data: steam } = await admin.from("platform_accounts")
         .select("platform_user_id")
         .eq("user_id", ownerId).eq("platform", "steam").maybeSingle();
