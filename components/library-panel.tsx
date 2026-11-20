@@ -123,7 +123,6 @@ export default function LibraryPanel() {
   }
 
   return <main className="social-page">
-    <header className="social-top"><Link href="/" className="social-back"><ArrowLeft size={17}/> Nexora'ya dön</Link><span>OYUN KÜTÜPHANEN</span></header>
     <section className="social-wrap">
       <div className="social-heading"><div className="social-icon"><Gamepad2/></div><div><div className="social-eyebrow">TEK MERKEZDE</div><h1>Oyun kütüphanem</h1><p>Oyun platformu hesaplarını Nexora profiline ekle.</p></div></div>
       {notice && <div className="social-alert success">{notice}</div>}
