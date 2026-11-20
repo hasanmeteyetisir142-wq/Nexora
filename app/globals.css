@@ -141,3 +141,48 @@
 .privacy-card{display:flex;align-items:center;justify-content:space-between;gap:18px}.privacy-copy b{font-size:13px}.privacy-copy p{font-size:10px;color:#8991a5;margin:6px 0 0;line-height:1.6}.privacy-card select{min-width:190px;max-width:100%;background:#0d111c;border:1px solid #393d52;border-radius:8px;padding:11px;color:#f4f4fa;font:11px 'DM Sans'}.privacy-friend-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:14px}.privacy-friend-list label{display:flex;align-items:center;gap:9px;padding:10px;border:1px solid #292f40;border-radius:8px;color:#dce0ed;font-size:11px}.privacy-friend-list input{accent-color:#9b82ff}.privacy-note{font-size:10px;line-height:1.7;color:#858da2;margin-top:15px}@media(max-width:600px){.privacy-card{align-items:stretch;flex-direction:column}.privacy-card select{width:100%}.privacy-friend-list{grid-template-columns:1fr}}
 
 .auth-terms{display:flex!important;flex-direction:row!important;align-items:flex-start;gap:9px;font-size:11px!important;line-height:1.6;color:#aab1c4}.auth-terms input{margin-top:3px;accent-color:#9a82ff}.auth-terms a{color:#c0afff;text-decoration:underline}.legal-page{max-width:820px;margin:0 auto;padding:48px 24px 90px;color:#dfe3ef;line-height:1.8}.legal-page>a{color:#bba8ff;text-decoration:none;font-size:13px}.legal-page h1{font-size:36px;margin:14px 0 20px}.legal-page h2{font-size:18px;margin:28px 0 8px}.legal-page p{font-size:14px;color:#aeb6c9}.legal-eyebrow{margin-top:38px!important;color:#9e8aff!important;font-size:11px!important;letter-spacing:2px}.legal-warning{padding:16px;border:1px solid #705c38;background:#282318;border-radius:10px;color:#f0d9a4!important;font-size:12px!important;margin-top:30px}
+
+
+/* Nexora real platform library */
+.social-wrap{width:min(100% - 36px,900px);margin:0 auto;padding:38px 0 70px}
+.social-page{min-height:100vh;background:radial-gradient(ellipse at 75% -10%,#20204455,transparent 38%),#090b12;color:#f2f4fa}
+.social-top{height:66px;border-bottom:1px solid #202433;display:flex;align-items:center;justify-content:space-between;padding:0 max(22px,calc((100vw - 900px)/2));color:#858da2;font-size:10px;font-weight:800;letter-spacing:1.3px}
+.social-back{display:flex;align-items:center;gap:8px;color:#b8a8ff;text-decoration:none;font-size:12px;letter-spacing:0}
+.social-heading{display:flex;align-items:center;gap:16px;margin:8px 0 26px}
+.social-icon{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:#9b82ff20;color:#b9a7ff;border:1px solid #9b82ff35}
+.social-eyebrow{font-size:9px;font-weight:800;letter-spacing:1.6px;color:#a997ff}
+.social-heading h1{font:600 28px 'Space Grotesk';margin:5px 0}
+.social-heading p{font-size:12px;color:#8991a5;margin:0}
+.social-card{border:1px solid #252b3b;background:linear-gradient(145deg,#141825,#10131d);border-radius:12px;padding:18px;margin:0 0 14px}
+.social-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.social-card-head h2{display:flex;align-items:center;gap:8px;font:600 15px 'Space Grotesk';margin:0}
+.social-card-head>span{font-size:10px;color:#9e91d8}
+.social-empty{font-size:11px;color:#858da2;line-height:1.7}
+.social-alert{padding:11px 13px;border-radius:8px;font-size:11px;margin:12px 0}
+.social-alert.error{background:#5a242b55;border:1px solid #a34b5b;color:#ffb4bd}
+.social-alert.success{background:#1c4a3c55;border:1px solid #367f67;color:#a8f0d1}
+.social-primary{display:inline-flex;align-items:center;justify-content:center;gap:9px;border:1px solid #a58dff;background:linear-gradient(130deg,#9b82ff,#765de0);border-radius:8px;padding:12px 16px;color:white;text-decoration:none;font-size:11px;font-weight:800}
+.social-primary:disabled{opacity:.6;cursor:wait}
+.steam-account-row{display:flex;align-items:center;gap:13px}
+.steam-avatar{width:52px;height:52px;border-radius:12px;overflow:hidden;background:#26374c;display:grid;place-items:center;color:#c6d8ec}
+.steam-avatar img{width:100%;height:100%;object-fit:cover}
+.steam-account-copy{display:grid;gap:5px;flex:1;min-width:0}
+.steam-account-copy b{font-size:13px}
+.steam-account-copy span{font-size:10px;color:#8991a5}
+.steam-account-copy a{display:flex;align-items:center;gap:5px;color:#a997ff;font-size:10px;text-decoration:none}
+.steam-connect-copy p{font-size:11px;color:#929aaf;line-height:1.7;margin:0 0 14px}
+.steam-connect-button{width:max-content}
+.steam-library-card .social-card-head{align-items:center}
+.steam-game-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.steam-game-card{display:flex;align-items:center;gap:10px;min-width:0;padding:10px;border:1px solid #252b3b;background:#0d111b;border-radius:9px}
+.steam-game-card>img,.steam-game-placeholder{width:42px;height:42px;flex-shrink:0;border-radius:7px;object-fit:cover;background:#222b3b}
+.steam-game-placeholder{display:grid;place-items:center;color:#a997ff}
+.steam-game-card>div:last-child{display:grid;gap:5px;min-width:0}
+.steam-game-card b{font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.steam-game-card span{font-size:9px;color:#8991a5}
+.platform-coming-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.platform-coming-grid>div{display:grid;gap:6px;padding:12px;border:1px solid #252b3b;background:#0d111b;border-radius:8px}
+.platform-coming-grid b{font-size:11px}
+.platform-coming-grid span{font-size:9px;line-height:1.5;color:#858da2}
+.privacy-note{display:flex;align-items:flex-start;gap:7px;font-size:10px;color:#858da2;line-height:1.6;margin-top:14px}
+@media(max-width:600px){.social-wrap{width:calc(100% - 28px);padding-top:25px}.social-top{padding:0 14px}.social-heading h1{font-size:23px}.steam-game-grid,.platform-coming-grid{grid-template-columns:1fr}.social-card{padding:14px}}
