@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState, type FormEvent, type ChangeEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent, type ChangeEvent } from "react";
 import Link from "next/link";
 import { ArrowLeft, Camera, LoaderCircle, Save, UserRound } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function ProfilePanel() {
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const [userId,setUserId] = useState("");
   const [email,setEmail] = useState("");
   const [username,setUsername] = useState("");
