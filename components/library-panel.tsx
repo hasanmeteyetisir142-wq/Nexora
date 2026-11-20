@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, ExternalLink, Gamepad2, LoaderCircle, RefreshCw, ShieldCheck, Unlink } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import DiscordConnection from "@/components/discord-connection";
 
 type PlatformAccount = {
   id: string;
@@ -26,6 +27,7 @@ const messages: Record<string, string> = {
   provider_error: "Steam sağlayıcı doğrulaması başarısız oldu.",
   signature_error: "Steam imza bilgileri eksik.",
   verification_failed: "Steam hesabının doğrulaması başarısız oldu.",
+  server_config_missing: "Steam hesap bağlantısı için sunucu ayarı eksik.",
 };
 
 export default function LibraryPanel() {
@@ -99,9 +101,10 @@ export default function LibraryPanel() {
         {!gamesLoading && games.length === 0 && <p className="social-empty">Oyun kütüphanesi henüz yüklenmedi. Steam Web API anahtarı ve Steam profilinde herkese açık Oyun Detayları görünürlüğü gerekebilir.</p>}
         {games.length > 0 && <><p className="social-empty">{games.length} oyun bulundu. Oynama süreleri Steam'den alınır.</p><div className="steam-game-grid">{games.map(game => <article className="steam-game-card" key={game.appid}>{game.img_icon_url ? <img src={`https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`} alt=""/> : <div className="steam-game-placeholder"><Gamepad2/></div>}<div><b>{game.name}</b><span>{Math.round((game.playtime_forever || 0) / 60)} saat oynandı</span></div></article>)}</div></>}
       </section>}
+      <DiscordConnection />
       <section className="social-card upcoming-platforms">
         <div className="social-card-head"><h2>Diğer platformlar</h2><span>Sonraki entegrasyonlar</span></div>
-        <div className="platform-coming-grid"><div><b>Xbox</b><span>Microsoft hesabı ve izinli oyun verileri</span></div><div><b>PlayStation</b><span>PSN bağlantısı ve erişilebilir profil verileri</span></div><div><b>Discord</b><span>Discord OAuth ve izin verilen profil bilgileri</span></div></div>
+        <div className="platform-coming-grid"><div><b>Xbox</b><span>Microsoft hesabı ve izinli oyun verileri</span></div><div><b>PlayStation</b><span>PSN bağlantısı ve erişilebilir profil verileri</span></div></div>
         <p className="privacy-note"><ShieldCheck size={14}/> Platform bağlantılarını istediğin zaman kaldırabilirsin. Her platformun sunduğu API ve izinler farklıdır.</p>
       </section>
     </section>
