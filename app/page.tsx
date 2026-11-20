@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import {
   Activity, ArrowRight, Bell, ChevronDown, Compass, Gamepad2, Headphones,
   Home, MessageCircle, Plus, Search, Settings, ShieldCheck, Sparkles,
   Swords, Trophy, Users, Wallet, Zap, Menu, X, MoreHorizontal, Play,
-  Radio, Globe2, CircleDot
+  Radio, Globe2, CircleDot, LogOut
 } from "lucide-react";
 
 const nav = [
@@ -34,6 +36,32 @@ const platforms = [
 ];
 
 export default function Dashboard() {
+  const router = useRouter();
+  const supabase = createClient();
+  const [accountName, setAccountName] = useState("Oyuncu");
+  const [accountInitial, setAccountInitial] = useState("N");
+  const [signingOut, setSigningOut] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    const loadProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || !active) return;
+      const { data } = await supabase.from("profiles").select("display_name, username").eq("id", user.id).maybeSingle();
+      const name = data?.display_name || data?.username || user.email?.split("@")[0] || "Oyuncu";
+      if (active) { setAccountName(name); setAccountInitial(name.slice(0, 1).toUpperCase()); }
+    };
+    void loadProfile();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => { void loadProfile(); });
+    return () => { active = false; subscription.unsubscribe(); };
+  }, [supabase]);
+
+  const handleSignOut = async () => {
+    setSigningOut(true);
+    await supabase.auth.signOut();
+    router.replace("/login");
+    router.refresh();
+  };
   const [active, setActive] = useState("Genel Bakış");
   const [query, setQuery] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -54,7 +82,7 @@ export default function Dashboard() {
         <div className="sidebar-bottom">
           <div className="upgrade-card"><div className="upgrade-icon"><Zap size={17}/></div><strong>Nexora'yı keşfet.</strong><p>Oyun dünyanı tek bir yerde birleştir.</p><button onClick={() => select("Hesaplarım")}>Hesaplarını bağla <ArrowRight size={14}/></button></div>
           <button className="nav-item settings" onClick={() => select("Ayarlar")}><Settings size={18}/><span>Ayarlar</span></button>
-          <div className="profile-mini"><div className="avatar avatar-user">H</div><div className="profile-text"><b>HasanMete</b><span>Seviye 12 · Gezgin</span></div><MoreHorizontal size={19}/></div>
+          <div className="profile-mini"><div className="avatar avatar-user">{accountInitial}</div><div className="profile-text"><b>{accountName}</b><span>Nexora oyuncusu</span></div><button className="logout-mini" onClick={handleSignOut} disabled={signingOut} aria-label="Çıkış yap" title="Çıkış yap"><LogOut size={17}/></button></div>
         </div>
       </aside>
 
@@ -62,11 +90,11 @@ export default function Dashboard() {
         <header className="topbar">
           <button className="mobile-menu" onClick={() => setMobileOpen(true)}><Menu size={21}/></button>
           <div className="breadcrumb">NEXORA <span>/</span> <b>{active.toUpperCase()}</b></div>
-          <div className="top-actions"><label className="searchbox"><Search size={17}/><input placeholder="Oyun, oyuncu veya topluluk ara..." value={query} onChange={e => setQuery(e.target.value)}/><kbd>⌘ K</kbd></label><button className="icon-btn notification" aria-label="Bildirimler"><Bell size={18}/><i/></button><div className="top-avatar">H</div></div>
+          <div className="top-actions"><label className="searchbox"><Search size={17}/><input placeholder="Oyun, oyuncu veya topluluk ara..." value={query} onChange={e => setQuery(e.target.value)}/><kbd>⌘ K</kbd></label><button className="icon-btn notification" aria-label="Bildirimler"><Bell size={18}/><i/></button><div className="top-avatar">{accountInitial}</div></div>
         </header>
 
         {active === "Genel Bakış" ? <div className="content">
-          <div className="welcome-row"><div><div className="eyebrow"><span className="live-dot"/> OYUN DÜNYAN HAZIR</div><h1>Tekrar hoş geldin, <em>Hasan.</em></h1><p className="subheading">Bugün hangi maceraya atılıyoruz?</p></div><button className="primary-btn" onClick={() => select("Oyunları Keşfet")}><Compass size={17}/> Oyun keşfet <ArrowRight size={16}/></button></div>
+          <div className="welcome-row"><div><div className="eyebrow"><span className="live-dot"/> OYUN DÜNYAN HAZIR</div><h1>Tekrar hoş geldin, <em>{accountName}.</em></h1><p className="subheading">Bugün hangi maceraya atılıyoruz?</p></div><button className="primary-btn" onClick={() => select("Oyunları Keşfet")}><Compass size={17}/> Oyun keşfet <ArrowRight size={16}/></button></div>
           <div className="hero-card"><div className="hero-glow"/><div className="hero-copy"><div className="hero-tag"><Sparkles size={13}/> NEXORA'NIN DÜNYASI</div><h2>Oyun sadece<br/>başlangıç.</h2><p>Arkadaşlarınla buluş, topluluğunu keşfet,<br/>oyun dünyanı tek yerden yönet.</p><button onClick={() => select("Hesaplarım")}>Hesaplarını bağla <ArrowRight size={15}/></button></div><div className="hero-art"><div className="orbit orbit-one"/><div className="orbit orbit-two"/><div className="orb-core"><Sparkles size={42}/></div><div className="float-chip chip-one"><Gamepad2 size={16}/> PLAY</div><div className="float-chip chip-two"><Users size={16}/> CONNECT</div><div className="float-chip chip-three"><Trophy size={16}/> WIN</div></div><div className="hero-index">01 <span>/ 03</span></div></div>
 
           <div className="section-heading"><div><div className="eyebrow">CANLI AKIŞ</div><h3>Oyun dünyanda neler oluyor?</h3></div><button className="text-btn" onClick={() => select("Topluluk")}>Tümünü gör <ArrowRight size={15}/></button></div>
