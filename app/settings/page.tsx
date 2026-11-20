@@ -1,2 +1,3 @@
 import SettingsPanel from "@/components/settings-panel";
-export default function SettingsPage(){ return <SettingsPanel/>; }
+import WorkspaceShell from "@/components/workspace-shell";
+export default function SettingsPage(){return <WorkspaceShell><SettingsPanel/></WorkspaceShell>;}
