@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import PublicHome from "@/components/public-home";
 import {
   Activity, ArrowRight, Bell, ChevronDown, Compass, Gamepad2, Headphones,
   Home, MessageCircle, Plus, Search, Settings, ShieldCheck, Sparkles,
@@ -38,6 +39,8 @@ const platforms = [
 export default function Dashboard() {
   const router = useRouter();
   const supabase = createClient();
+  const [authenticated, setAuthenticated] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
   const [accountName, setAccountName] = useState("Oyuncu");
   const [accountInitial, setAccountInitial] = useState("N");
   const [signingOut, setSigningOut] = useState(false);
@@ -46,7 +49,10 @@ export default function Dashboard() {
     let active = true;
     const loadProfile = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user || !active) return;
+      if (!active) return;
+      setAuthenticated(Boolean(user));
+      setAuthChecked(true);
+      if (!user) return;
       const { data } = await supabase.from("profiles").select("display_name, username").eq("id", user.id).maybeSingle();
       const name = data?.display_name || data?.username || user.email?.split("@")[0] || "Oyuncu";
       if (active) { setAccountName(name); setAccountInitial(name.slice(0, 1).toUpperCase()); }
