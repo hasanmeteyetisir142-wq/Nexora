@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Gamepad2, LoaderCircle, ShieldCheck, Unlink, ChevronDown } from "lucide-react";
+import { ArrowLeft, Gamepad2, LoaderCircle, ShieldCheck, Unlink, ChevronDown, Copy, Check, ExternalLink } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import DiscordConnection from "@/components/discord-connection";
 
@@ -39,6 +39,8 @@ export default function LibraryPanel() {
   const [expanded, setExpanded] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [username, setUsername] = useState("");
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -48,6 +50,8 @@ export default function LibraryPanel() {
         window.location.href = "/login";
         return;
       }
+      const { data: profileData } = await supabase.from("profiles").select("username").eq("id", user.id).maybeSingle();
+      if (active) setUsername(profileData?.username || "");
       const { data, error: queryError } = await supabase
         .from("platform_accounts")
         .select("id,platform_user_id,display_name,avatar_url,profile_url")
@@ -89,6 +93,18 @@ export default function LibraryPanel() {
       setError(e instanceof Error ? e.message : "PlayStation ID kaydedilemedi. Tekrar dene.");
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function copyPsnId() {
+    if (!account) return;
+    try {
+      await navigator.clipboard.writeText(account.platform_user_id);
+      setCopied(true);
+      setNotice("PSN Online ID panoya kopyalandı.");
+      window.setTimeout(() => setCopied(false), 1800);
+    } catch {
+      setError("Kopyalama başarısız. ID'ni seçip elle kopyalayabilirsin.");
     }
   }
 
@@ -136,15 +152,20 @@ export default function LibraryPanel() {
         {expanded && <div className="platform-details">
           {loading ? <p className="social-empty"><LoaderCircle size={16}/> Hesap bilgisi yükleniyor...</p> : account ? <div className="steam-account-row">
             <div className="steam-avatar"><Gamepad2 size={22}/></div>
-            <div className="steam-account-copy"><b>PSN Online ID: {account.platform_user_id}</b><span>Bu ID senin tarafından girildi; Sony doğrulaması yapılmadı.</span></div>
-            <button className="friend-reject" onClick={disconnectPlayStation} title="ID'yi kaldır"><Unlink size={16}/></button>
+            <div className="steam-account-copy"><b>PSN Online ID: {account.platform_user_id}</b><span>Bu ID Nexora oyuncu profilinde paylaşılabilir. Sony doğrulaması yapılmadı.</span></div>
+            <button className="friend-reject" type="button" onClick={copyPsnId} title="PSN ID'yi kopyala">{copied ? <Check size={16}/> : <Copy size={16}/>}</button>
+            <button className="friend-reject" type="button" onClick={disconnectPlayStation} title="ID'yi kaldır"><Unlink size={16}/></button>
           </div> : <form className="psn-connect-form" onSubmit={connectPlayStation}>
             <p>PSN Online ID'ni buraya yaz. Bu işlem Sony hesabına giriş yapmaz; hesabın sana ait olduğunu doğrulayamaz ve PlayStation oyunlarını getirmez.</p>
             <label htmlFor="psn-online-id">PSN Online ID</label>
             <input id="psn-online-id" name="onlineId" autoComplete="off" maxLength={16} value={onlineId} onChange={(event) => setOnlineId(event.target.value)} placeholder="Örn. Oyuncu_123" />
             <button className="social-primary" type="submit" disabled={saving || !onlineId.trim()}>{saving ? <><LoaderCircle size={16}/> Kaydediliyor...</> : "PSN ID'yi kaydet"}</button>
           </form>}
-          <p className="privacy-note"><ShieldCheck size={14}/> Doğrulanmamış ID'ler resmi PlayStation hesap bağlantısı gibi gösterilmez. Profil gizlilik ayarlarından platform bilgilerini kapatabilirsin.</p>
+          {account && <div className="psn-profile-actions">
+            <p><ShieldCheck size={14}/> Bu ID, profil gizlilik ayarların izin veriyorsa diğer Nexora oyuncularına görünür.</p>
+            {username ? <Link className="social-secondary" href={"/u/" + encodeURIComponent(username)}><ExternalLink size={15}/> Nexora profilimi görüntüle</Link> : <Link className="social-secondary" href="/profile">Profil kullanıcı adını ayarla</Link>}
+          </div>}
+          <p className="privacy-note"><ShieldCheck size={14}/> Bu, Sony hesabına giriş veya sahiplik doğrulaması değildir. Resmî PlayStation bağlantısı gibi gösterilmez.</p>
         </div>}
       </section>
 
