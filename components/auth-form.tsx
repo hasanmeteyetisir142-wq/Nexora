@@ -65,7 +65,7 @@ export default function AuthForm({ mode }: Props) {
     <main className="auth-shell">
       <div className="auth-glow auth-glow-one" />
       <div className="auth-glow auth-glow-two" />
-      <Link href="/" className="auth-brand"><span className="auth-brand-icon"><Sparkles size={19} /></span>NEXORA<span className="auth-beta">BETA</span></Link>
+      <Link href="/" className="auth-brand"><span className="auth-brand-icon"><Sparkles size={19} /></span>NEXORA</Link>
       <section className="auth-card">
         <div className="auth-symbol"><Gamepad2 size={24} /></div>
         <div className="auth-eyebrow">{isSignup ? "OYUN DÜNYANA KATIL" : "TEKRAR HOŞ GELDİN"}</div>
