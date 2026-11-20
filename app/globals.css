@@ -35,8 +35,8 @@
 .auth-foot{position:absolute;bottom:22px;color:#596176;font-size:8px;letter-spacing:1.3px;text-align:center}
 .spin{animation:auth-spin 1s linear infinite}
 @keyframes auth-spin{to{transform:rotate(360deg)}}
-.logout-mini{margin-left:auto;border:0;background:transparent;color:#818aa0;padding:5px;display:grid;place-items:center;border-radius:7px}
-.logout-mini:hover{background:#ffffff0c;color:#ffb3bd}
+.logout-mini{margin-left:auto;border:1px solid #45313a;background:#241820;color:#ffb3bd;padding:8px 10px;display:flex;align-items:center;justify-content:center;gap:6px;border-radius:8px;font-size:11px;font-weight:700;white-space:nowrap;cursor:pointer}
+.logout-mini:hover{background:#38202a;color:#ffd1d8;border-color:#70404b}
 .logout-mini:disabled{opacity:.5;cursor:wait}
 @media(max-width:520px){.auth-card{padding:27px 22px}.auth-card h1{font-size:25px}.auth-brand{top:20px;left:20px}.auth-foot{position:static;margin-top:25px}}
 
