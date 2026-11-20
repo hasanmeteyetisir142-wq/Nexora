@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, type FormEvent, type ChangeEvent } from "react";
-import Link from "next/link";
-import { ArrowLeft, Camera, LoaderCircle, Save, UserRound } from "lucide-react";
+import { Camera, LoaderCircle, Save, UserRound } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function ProfilePanel() {
@@ -51,8 +50,7 @@ export default function ProfilePanel() {
     setBusy(false);
   }
 
-  return <main className="social-page"><header className="social-top"><Link href="/" className="social-back"><ArrowLeft size={17}/> Nexora'ya dön</Link><span>OYUNCU PROFİLİ</span></header>
-    <section className="social-wrap"><div className="social-heading"><div className="social-icon"><UserRound/></div><div><div className="social-eyebrow">KİŞİSEL ALANIN</div><h1>Profilini düzenle</h1><p>Diğer oyuncuların seni nasıl göreceğini belirle.</p></div></div>
+  return <main className="social-page"><section className="social-wrap"><div className="social-heading"><div className="social-icon"><UserRound/></div><div><div className="social-eyebrow">KİŞİSEL ALANIN</div><h1>Profilini düzenle</h1><p>Diğer oyuncuların seni nasıl göreceğini belirle.</p></div></div>
     <form className="social-card profile-form" onSubmit={save}>
       <div className="profile-avatar-row"><div className="profile-avatar">{avatar?<img src={avatar} alt="Profil fotoğrafı"/>:<span>{(displayName||username||"N").slice(0,1).toUpperCase()}</span>}</div><label className="upload-avatar">{uploading?<LoaderCircle className="spin" size={16}/>:<Camera size={16}/>} Fotoğraf değiştir<input type="file" accept="image/png,image/jpeg,image/webp" onChange={uploadAvatar} disabled={uploading}/></label><small>PNG, JPG veya WEBP · En fazla 2 MB</small></div>
       <label>Görünen ad<input value={displayName} onChange={e=>setDisplayName(e.target.value)} maxLength={32} placeholder="Nasıl hitap edilsin?"/></label>
