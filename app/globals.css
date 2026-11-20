@@ -258,3 +258,15 @@ button.platform-launch{cursor:pointer}
 .discover-game-card span{font-size:10px;color:#8991a5}
 .discover-game-card button{border:1px solid #55477f;background:#29223f;color:#c6b8ff;border-radius:7px;padding:8px 10px;font-size:10px;font-weight:700}
 @media(max-width:600px){.discover-game-grid{grid-template-columns:1fr}.discover-game-card{padding:12px}.discover-game-card button{font-size:9px;padding:7px}}
+
+
+.nexora-bot-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:0 16px 16px}
+.nexora-bot{display:flex;align-items:flex-start;gap:11px;min-width:0;padding:13px;border:1px solid #2b3042;background:#0d111b;border-radius:10px}
+.nexora-bot-avatar{width:38px;height:38px;display:grid;place-items:center;flex-shrink:0;border-radius:11px;background:#29213f;color:#c3adff}
+.nexora-bot-copy{display:grid;gap:4px;min-width:0}
+.nexora-bot-copy>b{display:flex;align-items:center;gap:7px;font-size:11px}
+.nexora-bot-copy>b span{font-size:8px;letter-spacing:.5px;color:#bba8ff;background:#8b72ff20;padding:3px 5px;border-radius:4px}
+.nexora-bot-copy small{font-size:9px;color:#8d96aa}
+.nexora-bot-copy p{margin:2px 0;color:#b4bac9;font-size:10px;line-height:1.5}
+.nexora-bot-copy em{font-size:9px;color:#a995ff;font-style:normal}
+@media(max-width:650px){.nexora-bot-grid{grid-template-columns:1fr;padding:0 12px 12px}}
