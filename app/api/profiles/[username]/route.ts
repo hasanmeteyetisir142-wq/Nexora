@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createAdminClient } from "@/lib/supabase/admin";
 
 type Visibility = "public" | "friends" | "selected" | "private";
 function canView(value: unknown, ownerId: string, viewerId: string, selected: unknown, friends: Set<string>) {
@@ -20,7 +19,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
   const { username } = await params;
   const { data: profile, error } = await supabase.from("profiles")
-    .select("id,username,display_name,avatar_url,bio,privacy_settings")
+    .select("id,username,display_name,avatar_url,bio")
     .eq("username", decodeURIComponent(username).toLowerCase()).maybeSingle();
 
   if (error) return NextResponse.json({ error: "Profil bilgileri alınamadı." }, { status: 500 });
