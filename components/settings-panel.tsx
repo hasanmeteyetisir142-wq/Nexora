@@ -34,13 +34,13 @@ export default function SettingsPanel() {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { window.location.href = "/login"; return; }
-      const { data: profile } = await supabase.from("profiles").select("privacy_settings").eq("id", user.id).maybeSingle();
+      const { data: privacy } = await supabase.from("profile_privacy_settings").select("settings").eq("user_id", user.id).maybeSingle();
       const { data: links } = await supabase.from("friendships").select("requester_id,addressee_id").eq("status","accepted").or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`);
       const ids = [...new Set((links || []).map(x => x.requester_id === user.id ? x.addressee_id : x.requester_id))];
       const { data: people } = ids.length ? await supabase.from("profiles").select("id,display_name,username").in("id",ids) : { data: [] as any[] };
       if (!live) return;
       setUserId(user.id);
-      const saved = profile?.privacy_settings || {};
+      const saved = privacy?.settings || {};
       setSettings(s => ({ ...s, ...saved }));
       setSelected(Array.isArray(saved.selected_users) ? saved.selected_users : []);
       setFriends((people || []).map(p => ({ id:p.id, name:p.display_name || p.username || "Oyuncu" })));
@@ -50,7 +50,7 @@ export default function SettingsPanel() {
 
   async function save() {
     setBusy(true); setError(""); setNotice("");
-    const { error: saveError } = await supabase.from("profiles").update({ privacy_settings: { ...settings, selected_users: selected } }).eq("id", userId);
+    const { error: saveError } = await supabase.from("profile_privacy_settings").upsert({ user_id: userId, settings: { ...settings, selected_users: selected }, updated_at: new Date().toISOString() }, { onConflict: "user_id" });
     if (saveError) setError(saveError.message);
     else setNotice("Gizlilik ayarların kaydedildi.");
     setBusy(false);
