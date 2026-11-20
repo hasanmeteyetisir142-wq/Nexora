@@ -1,2 +1,3 @@
 import FriendsPanel from "@/components/friends-panel";
-export default function FriendsPage(){return <FriendsPanel/>;}
+import WorkspaceShell from "@/components/workspace-shell";
+export default function FriendsPage(){return <WorkspaceShell><FriendsPanel/></WorkspaceShell>;}
