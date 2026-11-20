@@ -26,7 +26,7 @@ export default function WorkspaceShell({ children }: { children: React.ReactNode
     await createClient().auth.signOut();
     window.location.href = "/login";
   }
-  return <main className="shell workspace-shell">
+  return <div className="shell workspace-shell">
     <aside className={`sidebar workspace-sidebar ${mobileOpen ? "sidebar-open" : ""}`}>
       <div className="brand"><div className="brand-mark"><Sparkles size={19}/></div><span>NEXORA</span><button className="mobile-close" onClick={() => setMobileOpen(false)} aria-label="Menüyü kapat"><X size={19}/></button></div>
       <div className="side-label">MENÜ</div>
@@ -41,5 +41,5 @@ export default function WorkspaceShell({ children }: { children: React.ReactNode
       <header className="topbar workspace-topbar"><button className="mobile-menu" onClick={() => setMobileOpen(true)} aria-label="Menüyü aç"><Menu size={21}/></button><div className="breadcrumb">NEXORA <span>/</span> <b>{items.find(item => item.href === pathname)?.label?.toUpperCase() || "OYUNCU ALANI"}</b></div><div className="top-actions"><Link className="workspace-home-link" href="/">Genel bakış</Link></div></header>
       {children}
     </section>
-  </main>;
+  </div>;
 }
