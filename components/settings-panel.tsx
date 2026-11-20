@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
-import { ArrowLeft, Shield, Save, LoaderCircle, Users } from "lucide-react";
+import { Shield, Save, LoaderCircle, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 type Visibility = "public" | "friends" | "selected" | "private";
@@ -57,7 +56,6 @@ export default function SettingsPanel() {
   }
 
   return <main className="social-page">
-    <header className="social-top"><Link href="/" className="social-back"><ArrowLeft size={17}/> Nexora'ya dön</Link><span>GİZLİLİK VE GÜVENLİK</span></header>
     <section className="social-wrap">
       <div className="social-heading"><div className="social-icon"><Shield/></div><div><div className="social-eyebrow">KONTROL SENDE</div><h1>Gizlilik ayarları</h1><p>Profilinde hangi bilgileri kimlerin görebileceğini seç.</p></div></div>
       {sections.map(section => <div className="social-card privacy-card" key={section.key}>
