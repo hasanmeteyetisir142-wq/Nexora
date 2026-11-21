@@ -17,7 +17,7 @@ const nav = [
   { label: "Oyunları Keşfet", icon: Compass },
   { label: "Arkadaşlar", icon: Users, href: "/friends" },
   { label: "Mesajlar", icon: MessageCircle, href: "/messages" },
-  { label: "Topluluk", icon: Globe2 },
+  { label: "Topluluk", icon: Globe2, href: "/community" },
   { label: "Profilim", icon: UserRound, href: "/profile" },
   { label: "Oyun kütüphanem", icon: Gamepad2, href: "/library" },
   { label: "Ayarlar", icon: Settings, href: "/settings" },
