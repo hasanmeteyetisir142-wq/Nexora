@@ -7,7 +7,7 @@ import { ArrowLeft, Gamepad2, ShieldCheck, Trophy, UserRound } from "lucide-reac
 type Data = {
   profile: { username: string; display_name: string | null; avatar_url: string | null; bio: string | null };
   visibility: { platforms: boolean; library: boolean; achievements: boolean; online_status: boolean };
-  platforms: Array<{ platform: string; display_name: string | null; avatar_url: string | null; profile_url: string | null }>;
+  platforms: Array<{ platform: string; display_name: string | null; avatar_url: string | null; profile_url: string | null; verified?: boolean }>;
   games: Array<{ appid: number; name: string; playtime_forever?: number; img_icon_url?: string }>;
   library_message: string;
   is_owner: boolean;
@@ -55,11 +55,11 @@ export default function PublicProfile({ username }: { username: string }) {
         </section>
         <section className="social-card">
           <div className="social-card-head"><h2><ShieldCheck size={17}/> Bağlı platformlar</h2></div>
-          {!data.visibility.platforms ? <p className="social-empty">Bu oyuncu platform bilgilerini gizlemiştir.</p> : data.platforms.length ? <div className="public-platform-list">{data.platforms.map(p => <div key={p.platform}><b>{platformName[p.platform] || p.platform}</b><span>{p.platform === "playstation" ? `PSN Online ID: ${p.display_name || "Belirtilmemiş"} · Kullanıcı beyanı, doğrulanmadı` : p.display_name || "Bağlı"}</span>{p.profile_url && <a href={p.profile_url} target="_blank" rel="noreferrer">Profili aç</a>}</div>)}</div> : <p className="social-empty">Henüz bağlı platform yok.</p>}
+          {!data.visibility.platforms ? <p className="social-empty">Bu oyuncu platform bilgilerini gizlemiştir.</p> : data.platforms.length ? <div className="public-platform-list">{data.platforms.map(p => <div key={p.platform}><b>{platformName[p.platform] || p.platform}</b><span>{p.platform === "playstation" ? `PSN Online ID: ${p.display_name || "Belirtilmemiş"}` : p.display_name || "Bağlı"}</span>{p.platform === "playstation" && (p.verified ? <small className="psn-public-verified"><ShieldCheck size={12}/> Hesap sahipliği doğrulandı</small> : <small className="psn-public-unverified">Hesap henüz doğrulanmadı</small>)}{p.profile_url && <a href={p.profile_url} target="_blank" rel="noreferrer">Profili aç</a>}</div>)}</div> : <p className="social-empty">Henüz bağlı platform yok.</p>}
         </section>
         <section className="social-card">
           <div className="social-card-head"><h2><Gamepad2 size={17}/> Oyun kütüphanesi</h2></div>
-          {!data.visibility.library ? <p className="social-empty">Bu oyuncu oyun kütüphanesini gizlemiştir.</p> : data.games.length ? <div className="steam-game-grid">{data.games.map(game => <article className="steam-game-card" key={game.appid}>{game.img_icon_url ? <img src={`https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`} alt=""/> : <div className="steam-game-placeholder"><Gamepad2/></div>}<div><b>{game.name}</b><span>{Math.round((game.playtime_forever || 0)/60)} saat oynandı</span></div></article>)}</div> : <p className="social-empty">{data.library_message || "Paylaşılacak oyun bulunamadı."}</p>}
+          {!data.visibility.library ? <p className="social-empty">Bu oyuncu oyun kütüphanesini gizlemiştir.</p> : data.games.length ? <div className="steam-game-grid">{data.games.map(game => <article className="steam-game-card" key={game.appid}>{game.img_icon_url ? <img src={`https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`} alt=""/> : <div className="steam-game-placeholder"><Gamepad2/></div>}<div><b>{game.name}</b><span>{Math.round((game.playtime_forever || 0)/60)} saat oynandı</span></div></article>)}</div> : <p className="social-empty">{data.library_message || (data.platforms.some(platform => platform.platform === "playstation") ? "PSN hesabı bağlı; ancak Sony herkese açık oyun kütüphanesi verisi sağlamadığı için PlayStation oyunları şu anda otomatik listelenemiyor." : "Paylaşılacak oyun bulunamadı.")}</p>}
         </section>
         <section className="social-card">
           <div className="social-card-head"><h2><Trophy size={17}/> Başarımlar ve çevrim içi durumu</h2></div>
