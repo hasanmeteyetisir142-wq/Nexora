@@ -47,7 +47,12 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       } catch {
         libraryMessage = "Steam'e bağlanırken ağ hatası oluştu.";
       }
-    } else if (!result.steam_id) libraryMessage = "Steam hesabı bağlı değil.";
+    } else if (!result.steam_id) {
+      const hasPlayStation = result.platforms?.some(platform => platform.platform === "playstation");
+      libraryMessage = hasPlayStation
+        ? "PlayStation hesabı bağlı. PSN oyun listesi, Sony'nin bu hesap için üçüncü taraflara açtığı verilere bağlıdır. Şu anda Nexora'ya erişilebilir bir oyun listesi dönmedi; PSN gizlilik ayarları izin verse bile Sony yetkilendirmesi olmadan oyunları güvenilir biçimde alamıyoruz."
+        : "Paylaşılacak oyun kütüphanesi bulunamadı.";
+    }
     else libraryMessage = "Steam kütüphanesi henüz yapılandırılmadı.";
   }
 
