@@ -18,7 +18,10 @@ export default function MessagesPage() {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
-  const [messageMenu, setMessageMenu] = useState("");\n  const [editingMessage, setEditingMessage] = useState("");\n  const [editBody, setEditBody] = useState("");\n  const [savingMessage, setSavingMessage] = useState(false);
+  const [messageMenu, setMessageMenu] = useState("");
+  const [editingMessage, setEditingMessage] = useState("");
+  const [editBody, setEditBody] = useState("");
+  const [savingMessage, setSavingMessage] = useState(false);
 
   const loadMessages = useCallback(async (me: string, other: string) => {
     const { data, error: loadError } = await supabase.from("messages").select("id,sender_id,recipient_id,body,created_at,edited_at")
