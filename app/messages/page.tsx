@@ -1,12 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
-import { ArrowLeft, LoaderCircle, MessageCircle, Send, Users } from "lucide-react";
+import { ArrowLeft, LoaderCircle, MessageCircle, Send, Users, MoreVertical, Edit3, Trash2, Save, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import WorkspaceShell from "@/components/workspace-shell";
 
 type Person = { id: string; username: string | null; display_name: string | null; avatar_url: string | null };
-type Message = { id: string; sender_id: string; recipient_id: string; body: string; created_at: string };
+type Message = { id: string; sender_id: string; recipient_id: string; body: string; created_at: string; edited_at?: string | null };
 
 export default function MessagesPage() {
   const supabase = useMemo(() => createClient(), []);
@@ -17,10 +17,10 @@ export default function MessagesPage() {
   const [draft, setDraft] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState("");\n  const [messageMenu, setMessageMenu] = useState("");\n  const [editingMessage, setEditingMessage] = useState("");\n  const [editBody, setEditBody] = useState("");\n  const [savingMessage, setSavingMessage] = useState(false);
 
   const loadMessages = useCallback(async (me: string, other: string) => {
-    const { data, error: loadError } = await supabase.from("messages").select("id,sender_id,recipient_id,body,created_at")
+    const { data, error: loadError } = await supabase.from("messages").select("id,sender_id,recipient_id,body,created_at,edited_at")
       .or(`and(sender_id.eq.${me},recipient_id.eq.${other}),and(sender_id.eq.${other},recipient_id.eq.${me})`)
       .order("created_at", { ascending: true }).limit(150);
     if (loadError) setError(loadError.message);
@@ -75,6 +75,22 @@ export default function MessagesPage() {
     setSending(false);
   }
 
+  async function saveEditedMessage(id: string) {
+    if (!editBody.trim() || savingMessage) return;
+    setSavingMessage(true); setError("");
+    const { data, error: updateError } = await supabase.from("messages").update({ body: editBody.trim(), edited_at: new Date().toISOString() })
+      .eq("id", id).eq("sender_id", uid).select("id,sender_id,recipient_id,body,created_at,edited_at").single();
+    if (updateError) setError(updateError.message);
+    else { setMessages(current => current.map(m => m.id === id ? data as Message : m)); setEditingMessage(""); setEditBody(""); }
+    setSavingMessage(false);
+  }
+  async function deleteMessage(id: string) {
+    if (!window.confirm("Bu mesajı silmek istiyor musun?")) return;
+    const { error: deleteError } = await supabase.from("messages").delete().eq("id", id).eq("sender_id", uid);
+    if (deleteError) setError(deleteError.message);
+    else setMessages(current => current.filter(m => m.id !== id));
+    setMessageMenu("");
+  }
   const display = (p: Person) => p.display_name || p.username || "Oyuncu";
   return <WorkspaceShell><main className="social-page">
     <section className="messages-wrap">
@@ -88,7 +104,12 @@ export default function MessagesPage() {
         <section className="social-card messages-chat">
           {!selected ? <div className="messages-empty"><MessageCircle size={32}/><h2>Bir sohbet seç</h2><p>Soldan bir arkadaşını seçerek mesajlaşmaya başlayabilirsin.</p></div> : <>
             <div className="messages-chat-head"><span className="friend-person-avatar">{selected.avatar_url ? <img src={selected.avatar_url} alt=""/> : <span>{display(selected).slice(0,1).toUpperCase()}</span>}</span><div><b>{display(selected)}</b><small>@{selected.username || "oyuncu"}</small></div></div>
-            <div className="messages-stream">{messages.length === 0 ? <p className="social-empty">Henüz mesaj yok. İlk mesajı sen gönder!</p> : messages.map(m => <div key={m.id} className={`message-bubble ${m.sender_id === uid ? "mine" : ""}`}><p>{m.body}</p><time>{new Date(m.created_at).toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"})}</time></div>)}</div>
+            <div className="messages-stream">{messages.length === 0 ? <p className="social-empty">Henüz mesaj yok. İlk mesajı sen gönder!</p> : messages.map(m => <div key={m.id} className={`message-bubble ${m.sender_id === uid ? "mine" : ""}`}>
+              {editingMessage === m.id ? <div className="message-edit-form"><textarea value={editBody} onChange={e=>setEditBody(e.target.value)} maxLength={2000}/><div><button onClick={()=>void saveEditedMessage(m.id)} disabled={savingMessage||!editBody.trim()}><Save size={13}/> Kaydet</button><button onClick={()=>{setEditingMessage("");setEditBody("");}}><X size={13}/> İptal</button></div></div> : <p>{m.body}</p>}
+              <div className="message-bubble-meta"><time>{new Date(m.created_at).toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"})}{m.edited_at&&<span className="edited-label"> · düzenlendi</span>}</time>
+              {m.sender_id===uid&&<div className="message-options-wrap"><button className="message-options" aria-label="Mesaj seçenekleri" onClick={()=>setMessageMenu(v=>v===m.id?"":m.id)}><MoreVertical size={15}/></button>{messageMenu===m.id&&<div className="community-post-menu"><button onClick={()=>{setEditingMessage(m.id);setEditBody(m.body);setMessageMenu("");}}><Edit3 size={13}/> Düzenle</button><button className="danger" onClick={()=>void deleteMessage(m.id)}><Trash2 size={13}/> Sil</button></div>}</div>}
+              </div>
+            </div>)}</div>
             <form className="messages-compose" onSubmit={sendMessage}><input value={draft} onChange={e=>setDraft(e.target.value)} maxLength={2000} placeholder="Bir mesaj yaz..." aria-label="Mesajın" /><button type="submit" disabled={sending || !draft.trim()}>{sending ? <LoaderCircle className="spin" size={17}/> : <Send size={17}/>} Gönder</button></form>
           </>}
           {error && <div className="social-alert error">{error}</div>}
