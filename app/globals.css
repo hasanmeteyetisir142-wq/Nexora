@@ -444,3 +444,5 @@ button.platform-launch{cursor:pointer}
 .message-edit-form>div{display:flex;gap:6px;justify-content:flex-end}
 .message-edit-form button{display:inline-flex;align-items:center;gap:5px;padding:6px 8px;border:1px solid #514879;border-radius:7px;background:#211d37;color:#ddd4ff;font-size:10px;cursor:pointer}
 @media(max-width:780px){.workspace-nav{gap:3px}.nav-section-trigger{padding:10px}.nav-section-links{padding-left:4px}}
+
+.nav-section-trigger{width:100%;background:transparent;text-align:left;font-family:inherit;}
