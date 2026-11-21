@@ -7,7 +7,8 @@ import { Activity, CalendarDays, Check, Clock3, Gamepad2, Gift, LoaderCircle, Me
 
 type Task = { id:string; task_key:string; title:string; description:string; reward_xp:number; active:boolean };
 type Session = { id:string; host_id:string; game_name:string; platform:string; slots_total:number; starts_at:string; note:string; status:string; profiles?:{display_name:string|null;username:string|null} };
-type EventItem = { id:string; creator_id:string; title:string; description:string; game_name:string; starts_at:string; max_players:number };\ntype SessionMember = { id:string; session_id:string; user_id:string; status:string };
+type EventItem = { id:string; creator_id:string; title:string; description:string; game_name:string; starts_at:string; max_players:number };
+type SessionMember = { id:string; session_id:string; user_id:string; status:string };
 type Post = { id:string; user_id:string; body:string; created_at:string };
 type Score = { user_id:string; score:number };
 type Wish = { id:string; game_name:string; platform:string };
@@ -21,7 +22,8 @@ export default function PlayHubPage(){
   const [claimed,setClaimed]=useState<string[]>([]);
   const [xp,setXp]=useState(0);
   const [coins,setCoins]=useState(0);
-  const [sessions,setSessions]=useState<Session[]>([]);\n  const [sessionMembers,setSessionMembers]=useState<SessionMember[]>([]);
+  const [sessions,setSessions]=useState<Session[]>([]);
+  const [sessionMembers,setSessionMembers]=useState<SessionMember[]>([]);
   const [events,setEvents]=useState<EventItem[]>([]);
   const [posts,setPosts]=useState<Post[]>([]);
   const [wishes,setWishes]=useState<Wish[]>([]);
@@ -60,7 +62,10 @@ export default function PlayHubPage(){
     const firstError=[t.error,c.error,r.error,s.error,e.error,p.error,w.error,sc.error].find(Boolean);
     if(firstError) setError(firstError.message);
     setTasks(t.data||[]);setClaimed((c.data||[]).map(x=>x.task_id));setXp(r.data?.xp||0);setCoins(r.data?.coins||0);
-    const sessionRows=s.data||[];setSessions(sessionRows);\n    const memberResult=sessionRows.length?await supabase.from("play_session_members").select("id,session_id,user_id,status").in("session_id",sessionRows.map(row=>row.id)):{data:[],error:null};\n    if(memberResult.error)setError(memberResult.error.message);setSessionMembers(memberResult.data||[]);\n    setEvents(e.data||[]);setPosts(p.data||[]);setWishes(w.data||[]);setScores(sc.data||[]);
+    const sessionRows=s.data||[];setSessions(sessionRows);
+    const memberResult=sessionRows.length?await supabase.from("play_session_members").select("id,session_id,user_id,status").in("session_id",sessionRows.map(row=>row.id)):{data:[],error:null};
+    if(memberResult.error)setError(memberResult.error.message);setSessionMembers(memberResult.data||[]);
+    setEvents(e.data||[]);setPosts(p.data||[]);setWishes(w.data||[]);setScores(sc.data||[]);
   },[supabase]);
 
   useEffect(()=>{
@@ -86,7 +91,12 @@ export default function PlayHubPage(){
     if(e1)setError(e1.message);else{setSessionNote("");setNotice("Oyun ilanı oluşturuldu.");if(uid)await load(uid);}
     setBusy(false);
   }
-  async function reviewSessionRequest(memberId:string){\n    setBusy(true);setError("");const {error:e}=await supabase.from("play_session_members").update({status:"accepted"}).eq("id",memberId);\n    if(e)setError(e.message);else{setNotice("Oyuncu ekibe kabul edildi.");if(uid)await load(uid);}\n    setBusy(false);\n  }\n  async function joinSession(id:string){
+  async function reviewSessionRequest(memberId:string){
+    setBusy(true);setError("");const {error:e}=await supabase.from("play_session_members").update({status:"accepted"}).eq("id",memberId);
+    if(e)setError(e.message);else{setNotice("Oyuncu ekibe kabul edildi.");if(uid)await load(uid);}
+    setBusy(false);
+  }
+  async function joinSession(id:string){
     setBusy(true);setError("");const {error:e}=await supabase.from("play_session_members").insert({session_id:id,user_id:uid,status:"pending"});
     if(e)setError(e.code==="23505"?"Bu ilana zaten katılma isteği gönderdin.":e.message);else setNotice("Katılma isteğin ev sahibine gönderildi.");
     setBusy(false);
