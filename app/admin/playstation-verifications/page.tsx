@@ -71,7 +71,7 @@ export default function PlayStationVerificationReview() {
   }
 
   return <main className="social-page"><section className="social-wrap">
-    <div className="social-heading"><div className="social-icon"><ShieldCheck/></div><div><div className="social-eyebrow">NEXORA YÖNETİM</div><h1>PSN doğrulama incelemeleri</h1><p>Profildeki kodu kontrol edip hesabı onayla veya reddet.</p></div><button className="social-secondary" onClick={async () => { sessionStorage.removeItem("nexora-admin-login"); await createClient().auth.signOut(); router.replace("/admin/login"); }}>Çıkış yap</button></div></div>
+    <div className="social-heading"><div className="social-icon"><ShieldCheck/></div><div><div className="social-eyebrow">NEXORA YÖNETİM</div><h1>PSN doğrulama incelemeleri</h1><p>Profildeki kodu kontrol edip hesabı onayla veya reddet.</p></div><button className="social-secondary" onClick={async () => { sessionStorage.removeItem("nexora-admin-login"); await createClient().auth.signOut(); router.replace("/admin/login"); }}>Çıkış yap</button></div>
     {error && <div className="social-alert error">{error}</div>}
     {message && <div className="social-alert success">{message}</div>}
     {loading ? <div className="social-card social-empty"><LoaderCircle/> Yükleniyor...</div> : items.length === 0 ? <div className="social-card social-empty">Bekleyen doğrulama isteği yok.</div> : items.map(item => <article className="social-card" key={item.id}>
