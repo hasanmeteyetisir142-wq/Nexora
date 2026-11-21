@@ -616,3 +616,8 @@ button.platform-launch{cursor:pointer}
  .workspace-main .messages-layout.has-selected{grid-template-columns:minmax(0,1fr)}
  .workspace-main .community-layout>section:first-child{max-height:38%}
 }
+
+
+/* Match the dashboard's expandable hover menu on every signed-in page */
+.workspace-nav .nav-section-links{display:none}
+.workspace-nav .nav-section:hover .nav-section-links,.workspace-nav .nav-section:focus-within .nav-section-links,.workspace-nav .nav-section.expanded .nav-section-links{display:grid}
