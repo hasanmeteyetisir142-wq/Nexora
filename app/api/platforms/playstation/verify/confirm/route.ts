@@ -9,12 +9,15 @@ export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null);
   const profileUrl = typeof body?.profileUrl === "string" ? body.profileUrl.trim() : "";
   let parsedUrl: URL;
-  try { parsedUrl = new URL(profileUrl); } catch {
-    return NextResponse.json({ error: "Geçerli bir PlayStation profil bağlantısı gir." }, { status: 400 });
+  try {
+    parsedUrl = new URL(/^https?:\/\//i.test(profileUrl) ? profileUrl : `https://${profileUrl}`);
+  } catch {
+    return NextResponse.json({ error: "PlayStation profil bağlantısı geçersiz. Örnek: https://profile.playstation.com/OnlineID" }, { status: 400 });
   }
-  const allowedHosts = new Set(["my.playstation.com", "www.playstation.com", "playstation.com"]);
-  if (parsedUrl.protocol !== "https:" || !allowedHosts.has(parsedUrl.hostname.toLowerCase())) {
-    return NextResponse.json({ error: "Güvenlik için yalnızca resmi PlayStation profil bağlantısı kabul edilir." }, { status: 400 });
+  const allowedHosts = new Set(["profile.playstation.com"]);
+  const profileId = parsedUrl.pathname.split("/").filter(Boolean)[0];
+  if (parsedUrl.protocol !== "https:" || !allowedHosts.has(parsedUrl.hostname.toLowerCase()) || !profileId || parsedUrl.username || parsedUrl.password) {
+    return NextResponse.json({ error: "PlayStation uygulamasından Paylaş > Profili Paylaş ile aldığın profile.playstation.com bağlantısını gir." }, { status: 400 });
   }
 
   const { data: account, error } = await supabase.from("platform_accounts")
