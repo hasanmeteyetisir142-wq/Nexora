@@ -11,7 +11,7 @@ const ADMIN_EMAIL = "hasanmeteyetisir142@gmail.com";
 export default function AdminLoginPage() {
   const router = useRouter();
   const supabase = createClient();
-  const [email, setEmail] = useState(ADMIN_EMAIL);
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -51,12 +51,12 @@ export default function AdminLoginPage() {
         <h1>Yönetici paneli.</h1>
         <p className="auth-description">PSN doğrulama isteklerini incelemek için yönetici hesabınla giriş yap.</p>
         <form className="auth-form" onSubmit={submit}>
-          <label>Yönetici e-postası<input type="email" value={email} onChange={event => setEmail(event.target.value)} required autoComplete="username" /></label>
+          <label>E-posta<input type="email" value={email} onChange={event => setEmail(event.target.value)} placeholder="E-posta adresini gir" required autoComplete="username" /></label>
           <label>Şifre<input type="password" value={password} onChange={event => setPassword(event.target.value)} placeholder="Yönetici hesabının şifresi" required autoComplete="current-password" /></label>
           {error && <div className="auth-alert auth-error" role="alert">{error}</div>}
           <button className="auth-submit" type="submit" disabled={busy}>{busy ? <LoaderCircle className="spin" size={17} /> : <><LockKeyhole size={17} /> Yönetici olarak giriş yap <ArrowRight size={17} /></>}</button>
         </form>
-        <p className="auth-description" style={{marginTop:18,fontSize:12}}>Yalnızca yetkilendirilmiş yönetici e-postası kabul edilir.</p>
+        <p className="auth-description" style={{marginTop:18,fontSize:12}}>Yönetici erişimi yalnızca yetkili hesapla sağlanır.</p>
       </section>
       <div className="auth-foot">© 2026 NEXORA · YÖNETİCİ ERİŞİMİ</div>
     </main>
