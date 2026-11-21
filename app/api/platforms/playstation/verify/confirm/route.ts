@@ -39,10 +39,10 @@ export async function POST() {
   }
 
   const candidates = [profile, profile?.profile, profile?.information, profile?.Information, profile?.profile?.profile].filter(Boolean);
-  const found = candidates.find((item: any) => typeof item?.aboutMe === "string" || typeof item?.aboutMe === "string");
+  const found = candidates.find((item: any) => typeof item?.aboutMe === "string");
   const aboutMe = found?.aboutMe ?? "";
   const returnedId = found?.onlineId ?? profile?.onlineId ?? profile?.profile?.onlineId;
-  if (returnedId && String(returnedId).toLowerCase() !== account.platform_user_id.toLowerCase()) {
+  if (!returnedId) {\n    return NextResponse.json({ error: "PlayStation profili doğrulanabilir Online ID bilgisi döndürmedi. Profil gizlilik ayarlarını kontrol et." }, { status: 502 });\n  }\n  if (String(returnedId).toLowerCase() !== account.platform_user_id.toLowerCase()) {
     return NextResponse.json({ error: "PSN servisinden farklı bir hesap döndü. Güvenlik için doğrulama durduruldu." }, { status: 409 });
   }
   if (typeof aboutMe !== "string" || !aboutMe.toUpperCase().includes(account.verification_code.toUpperCase())) {
@@ -55,7 +55,7 @@ export async function POST() {
     verification_expires_at: null,
     psn_about_me: aboutMe.slice(0, 1000),
     avatar_url: found?.avatarUrls?.[0]?.avatarUrl ?? found?.avatarUrl ?? null,
-    profile_url: `https://www.playstation.com/`,
+    profile_url: null,
     updated_at: new Date().toISOString(),
   }).eq("user_id", user.id).eq("platform", "playstation");
   if (updateError) return NextResponse.json({ error: "Kod doğru ancak doğrulama durumu kaydedilemedi. Tekrar dene." }, { status: 500 });
