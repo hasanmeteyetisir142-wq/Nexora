@@ -342,3 +342,18 @@ button.platform-launch{cursor:pointer}
 .playhub-tabs a{flex:0 0 auto;text-decoration:none;color:#9da5b8;border:1px solid #30364a;background:#151a29;border-radius:9px;padding:10px 14px;font-size:12px;font-weight:650;transition:background .15s,border-color .15s,color .15s}
 .playhub-tabs a:hover{color:#fff;border-color:#7464aa}
 .playhub-tabs a.active{background:#30274d;color:#e4d9ff;border-color:#8b72d5;box-shadow:0 0 0 1px #8b72d522 inset}
+
+
+.community-role-banner{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid #38304f;background:#1c1930;border-radius:10px;color:#c9b9ff;font-size:12px;margin:12px 0}
+.community-manage,.community-edit-form,.community-post-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
+.community-edit-form{width:100%}.community-edit-form input,.community-edit-form textarea{width:100%;background:#111624;color:#eef0f7;border:1px solid #353b50;border-radius:8px;padding:10px}
+.community-members{border:1px solid #2b3143;border-radius:10px;padding:12px;margin:14px 0}
+.community-members>b{display:flex;align-items:center;gap:7px;margin-bottom:10px;font-size:13px}
+.community-member-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid #272d3e;font-size:12px}
+.community-member-row small{color:#a99ad8}.community-member-row select{background:#171c2a;color:#e9eaf2;border:1px solid #424860;border-radius:7px;padding:6px;font-size:11px}
+.community-post-actions button{display:inline-flex;align-items:center;gap:5px;background:transparent;color:#aeb5c8;border:1px solid #343b50;border-radius:7px;padding:5px 8px;font-size:11px;cursor:pointer}
+.community-post-actions button:hover{color:#fff;border-color:#8070b9}
+.community-call{margin:14px 0}.community-call-actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.community-call-video{width:100%;max-width:280px;aspect-ratio:16/9;object-fit:cover;background:#080b12;border-radius:10px;border:1px solid #343b50}
+.community-call-grid{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.community-call-members{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.community-call-members span{font-size:10px;color:#b7bfd0;background:#1b2030;border-radius:20px;padding:6px 9px}
