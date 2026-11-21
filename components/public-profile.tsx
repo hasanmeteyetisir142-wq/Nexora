@@ -10,6 +10,7 @@ type Data = {
   platforms: Array<{ platform: string; display_name: string | null; avatar_url: string | null; profile_url: string | null; verified?: boolean }>;
   games: Array<{ appid: number; name: string; playtime_forever?: number; img_icon_url?: string }>;
   library_message: string;
+  reward_stats?: { visible: boolean; xp?: number; coins?: number; mini_games_played?: number; best_reflex_score?: number };
   is_owner: boolean;
 };
 
