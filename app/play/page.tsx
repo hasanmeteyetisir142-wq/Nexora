@@ -15,9 +15,9 @@ type Wish = { id:string; game_name:string; platform:string };
 
 const todayTR = () => new Intl.DateTimeFormat("en-CA",{timeZone:"Europe/Istanbul",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
 
-type PlayTab = "tasks" | "sessions" | "mini" | "events" | "feed" | "wishlist";
+type PlayTab = "home" | "tasks" | "sessions" | "mini" | "events" | "feed" | "wishlist";
 
-export default function PlayHubPage({ initialTab = "tasks" }: { initialTab?: PlayTab }){
+export default function PlayHubPage({ initialTab = "home" }: { initialTab?: PlayTab }){
   const [activeTab] = useState<PlayTab>(initialTab);
   const supabase=useMemo(()=>createClient(),[]);
   const [uid,setUid]=useState("");
@@ -164,6 +164,7 @@ export default function PlayHubPage({ initialTab = "tasks" }: { initialTab?: Pla
   return <WorkspaceShell><main className="content playhub">
     <div className="playhub-head"><div><div className="eyebrow"><Sparkles size={13}/> NEXORA OYUN MERKEZİ</div><h1>Her gün yeni bir macera.</h1><p className="subheading">Ekip bul, görevleri tamamla, XP kazan ve günün mini oyununda rekor kır.</p></div><div className="xp-pill"><Trophy size={18}/><span><b>{xp} XP</b><small>Oyuncu seviyesi puanın</small></span><span className="coin-count"><b>◈ {coins}</b><small>Nexora Jetonu</small></span></div></div>
     <nav className="playhub-tabs" aria-label="Oyun merkezi sekmeleri">
+      <a className={activeTab==="home"?"active":""} href="/play">Genel Bakış</a>
       <a className={activeTab==="tasks"?"active":""} href="/play/tasks">Günlük Görevler</a>
       <a className={activeTab==="sessions"?"active":""} href="/play/sessions">Birlikte Oyna</a>
       <a className={activeTab==="mini"?"active":""} href="/play/mini-games">Mini Oyunlar</a>
@@ -174,6 +175,33 @@ export default function PlayHubPage({ initialTab = "tasks" }: { initialTab?: Pla
     {error&&<div className="hub-alert hub-error">{error}<button onClick={()=>setError("")}><X size={15}/></button></div>}
     {notice&&<div className="hub-alert hub-success">{notice}<button onClick={()=>setNotice("")}><X size={15}/></button></div>}
 
+    {activeTab === "home" && (
+    <section className="hub-dashboard">
+      <div className="hub-welcome-panel">
+        <div className="hub-welcome-copy"><span className="eyebrow">OYUNUNUN MERKEZİ</span><h2>Bugün hangi maceraya atılıyorsun?</h2><p>Arkadaşlarını bul, oyun planı oluştur, görevleri tamamla ve Nexora topluluğunda yerini al.</p><div className="hub-welcome-actions"><a href="/play/sessions"><Users size={16}/> Ekip bul</a><a href="/play/mini-games"><Activity size={16}/> Hemen oyna</a></div></div>
+        <div className="hub-welcome-art"><div className="hub-orbit orbit-one"></div><div className="hub-orbit orbit-two"></div><div className="hub-controller"><Gamepad2 size={76}/></div><span className="hub-spark spark-one">✦</span><span className="hub-spark spark-two">✧</span></div>
+      </div>
+      <div className="hub-dashboard-stats">
+        <div><span>Toplam XP</span><b>{xp.toLocaleString("tr-TR")}</b><small><Trophy size={13}/> Oyuncu puanın</small></div>
+        <div><span>Nexora Jetonu</span><b>{coins.toLocaleString("tr-TR")}</b><small>◈ Ödül bakiyen</small></div>
+        <div><span>Görev ilerlemesi</span><b>{claimedCount}/{tasks.length}</b><small><Check size={13}/> Bugün tamamlanan</small></div>
+        <div><span>Açık ekip ilanı</span><b>{sessions.length}</b><small><Users size={13}/> Oyuncu arayanlar</small></div>
+      </div>
+      <div className="hub-dashboard-heading"><div><span className="eyebrow">KEŞFET</span><h2>Oyun alanın</h2></div><span>İstediğin bölüme geç</span></div>
+      <div className="hub-feature-grid">
+        <a href="/play/tasks" className="hub-feature-card feature-tasks"><span className="hub-feature-icon"><Gift size={23}/></span><b>Günlük Görevler</b><p>Görevlerini tamamla, XP ve jeton kazan.</p><span className="hub-feature-link">Görevleri gör <span>↗</span></span></a>
+        <a href="/play/sessions" className="hub-feature-card feature-sessions"><span className="hub-feature-icon"><Users size={23}/></span><b>Birlikte Oyna</b><p>Takım kur, diğer oyuncuların ilanlarına katıl.</p><span className="hub-feature-link">Ekip bul <span>↗</span></span></a>
+        <a href="/play/mini-games" className="hub-feature-card feature-mini"><span className="hub-feature-icon"><Activity size={23}/></span><b>Mini Oyunlar</b><p>Refleksini test et ve günlük sıralamaya gir.</p><span className="hub-feature-link">Oynamaya başla <span>↗</span></span></a>
+        <a href="/play/events" className="hub-feature-card feature-events"><span className="hub-feature-icon"><CalendarDays size={23}/></span><b>Etkinlikler</b><p>Topluluk etkinliklerine katıl veya kendi etkinliğini aç.</p><span className="hub-feature-link">Etkinlikleri keşfet <span>↗</span></span></a>
+        <a href="/play/feed" className="hub-feature-card feature-feed"><span className="hub-feature-icon"><MessageSquare size={23}/></span><b>Oyuncu Akışı</b><p>Oyun anlarını paylaş, topluluğunla etkileşim kur.</p><span className="hub-feature-link">Akışı aç <span>↗</span></span></a>
+        <a href="/play/wishlist" className="hub-feature-card feature-wishlist"><span className="hub-feature-icon"><Gamepad2 size={23}/></span><b>Oyun İstek Listesi</b><p>Sonra oynamak istediklerini bir arada tut.</p><span className="hub-feature-link">Listeme git <span>↗</span></span></a>
+      </div>
+      <div className="hub-dashboard-bottom">
+        <div className="hub-card"><div className="hub-card-heading"><h3><CalendarDays size={17}/> Yaklaşan etkinlikler</h3><a href="/play/events">Tümünü gör</a></div>{events.length===0?<p className="hub-empty">Henüz etkinlik yok. İlk etkinliği sen oluşturabilirsin.</p>:events.slice(0,3).map(ev=><div className="hub-dashboard-row" key={ev.id}><span className="hub-date-chip">{new Date(ev.starts_at).toLocaleDateString("tr-TR",{day:"2-digit",month:"short"})}</span><div><b>{ev.title}</b><small>{ev.game_name} · {new Date(ev.starts_at).toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"})}</small></div></div>)}</div>
+        <div className="hub-card"><div className="hub-card-heading"><h3><Users size={17}/> Oyuncu arayanlar</h3><a href="/play/sessions">Tüm ilanlar</a></div>{sessions.length===0?<p className="hub-empty">Açık ilan yok. Birlikte oynamak için ilk ilanı sen aç.</p>:sessions.slice(0,3).map(s=><div className="hub-dashboard-row" key={s.id}><span className="hub-game-badge"><Gamepad2 size={17}/></span><div><b>{s.game_name}</b><small>{s.platform} · {s.slots_total} kişilik ekip</small></div></div>)}</div>
+      </div>
+    </section>
+    )}
     {activeTab === "tasks" && (
     <section className="hub-section">
       <div className="hub-title"><div><span className="eyebrow">BUGÜNÜN HEDEFLERİ</span><h2><Gift size={20}/> Günlük görevler</h2></div><span className="hub-counter">{claimedCount}/{tasks.length} tamamlandı</span></div>
