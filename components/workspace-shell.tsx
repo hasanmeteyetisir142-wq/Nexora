@@ -42,6 +42,7 @@ function isActive(href: string, pathname: string) {
 export default function WorkspaceShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [openSection, setOpenSection] = useState<string | null>(null);
   const [signingOut, setSigningOut] = useState(false);
   async function signOut() {
     setSigningOut(true);
@@ -55,10 +56,10 @@ export default function WorkspaceShell({ children }: { children: React.ReactNode
       <nav className="workspace-nav">{sections.map(section => {
         const activeSection = section.items.some(item => isActive(item.href, pathname));
         return <div key={section.label} className={`nav-section ${activeSection ? "has-active" : ""}`}>
-          <div className={`nav-section-trigger ${activeSection ? "active" : ""}`}>{section.label}</div>
-          <div className="nav-section-links">{section.items.map(item => {
+          <button type="button" aria-expanded={openSection === section.label} className={`nav-section-trigger ${activeSection ? "active" : ""}`} onClick={() => setOpenSection(current => current === section.label ? null : section.label)}>{section.label}<ChevronDown size={14}/></button>
+          <div className={`nav-section-links ${openSection === section.label ? "is-open" : ""}`}>{section.items.map(item => {
             const active = isActive(item.href, pathname);
-            return <Link key={item.label} href={item.href} onClick={() => setMobileOpen(false)} className={`nav-item ${active ? "active" : ""}`}><item.icon size={18}/><span>{item.label}</span></Link>;
+            return <Link key={item.label} href={item.href} onClick={() => {setMobileOpen(false);setOpenSection(null);}} className={`nav-item ${active ? "active" : ""}`}><item.icon size={18}/><span>{item.label}</span></Link>;
           })}</div>
         </div>;
       })}</nav>
