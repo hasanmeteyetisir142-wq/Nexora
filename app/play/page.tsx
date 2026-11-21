@@ -25,6 +25,7 @@ export default function PlayHubPage(){
   const [sessions,setSessions]=useState<Session[]>([]);
   const [sessionMembers,setSessionMembers]=useState<SessionMember[]>([]);
   const [events,setEvents]=useState<EventItem[]>([]);
+  const [eventMembers,setEventMembers]=useState<{event_id:string;user_id:string}[]>([]);
   const [posts,setPosts]=useState<Post[]>([]);
   const [wishes,setWishes]=useState<Wish[]>([]);
   const [scores,setScores]=useState<Score[]>([]);
@@ -65,7 +66,10 @@ export default function PlayHubPage(){
     const sessionRows=s.data||[];setSessions(sessionRows);
     const memberResult=sessionRows.length?await supabase.from("play_session_members").select("id,session_id,user_id,status").in("session_id",sessionRows.map(row=>row.id)):{data:[],error:null};
     if(memberResult.error)setError(memberResult.error.message);setSessionMembers(memberResult.data||[]);
-    setEvents(e.data||[]);setPosts(p.data||[]);setWishes(w.data||[]);setScores(sc.data||[]);
+    const eventRows=e.data||[];setEvents(eventRows);
+    const eventMemberResult=eventRows.length?await supabase.from("nexora_event_participants").select("event_id,user_id").in("event_id",eventRows.map(row=>row.id)):{data:[],error:null};
+    if(eventMemberResult.error)setError(eventMemberResult.error.message);setEventMembers(eventMemberResult.data||[]);
+    setPosts(p.data||[]);setWishes(w.data||[]);setScores(sc.data||[]);
   },[supabase]);
 
   useEffect(()=>{
@@ -121,8 +125,8 @@ export default function PlayHubPage(){
     setBusy(false);
   }
   async function joinEvent(id:string){
-    setBusy(true);const {error:e}=await supabase.from("nexora_event_participants").insert({event_id:id,user_id:uid});
-    if(e)setError(e.code==="23505"?"Bu etkinliğe zaten katıldın.":e.message);else setNotice("Etkinliğe katıldın.");
+    setBusy(true);const {error:e}=await supabase.rpc("nexora_join_event",{p_event_id:id});
+    if(e)setError(e.message);else{setNotice("Etkinliğe katıldın.");if(uid)await load(uid);}
     setBusy(false);
   }
   function startGame(){
@@ -169,7 +173,7 @@ export default function PlayHubPage(){
     <section className="hub-section">
       <div className="hub-title"><div><span className="eyebrow">TOPLULUĞU CANLANDIR</span><h2><CalendarDays size={20}/> Etkinlikler ve turnuvalar</h2></div></div>
       <div className="hub-columns"><form className="hub-card hub-form" onSubmit={createEvent}><h3><Plus size={17}/> Etkinlik oluştur</h3><label>Etkinlik adı<input value={eventTitle} onChange={e=>setEventTitle(e.target.value)} required maxLength={80} placeholder="Hafta sonu Minecraft buluşması"/></label><label>Oyun<input value={eventGame} onChange={e=>setEventGame(e.target.value)} required maxLength={60}/></label><label>Tarih ve saat<input type="datetime-local" value={eventDate} onChange={e=>setEventDate(e.target.value)} required min={new Date().toISOString().slice(0,16)}/></label><button className="hub-primary" disabled={busy}><CalendarDays size={15}/> Etkinliği yayınla</button></form>
-      <div className="hub-card"><h3><CalendarDays size={17}/> Yaklaşan etkinlikler</h3>{events.length===0?<p className="hub-empty">Yaklaşan etkinlik yok. Bir tane düzenleyebilirsin!</p>:<div className="hub-list">{events.map(ev=><article className="hub-list-row" key={ev.id}><div className="hub-game-badge"><Trophy size={18}/></div><div className="hub-row-copy"><b>{ev.title}</b><span>{ev.game_name} · {new Date(ev.starts_at).toLocaleString("tr-TR")}</span><small>{ev.description||"Topluluk etkinliği"}</small></div>{ev.creator_id===uid?<span className="hub-tag">Düzenleyici</span>:<button className="hub-small-btn" disabled={busy} onClick={()=>void joinEvent(ev.id)}>Katıl</button>}</article>)}</div>}</div></div>
+      <div className="hub-card"><h3><CalendarDays size={17}/> Yaklaşan etkinlikler</h3>{events.length===0?<p className="hub-empty">Yaklaşan etkinlik yok. Bir tane düzenleyebilirsin!</p>:<div className="hub-list">{events.map(ev=><article className="hub-list-row" key={ev.id}><div className="hub-game-badge"><Trophy size={18}/></div><div className="hub-row-copy"><b>{ev.title}</b><span>{ev.game_name} · {eventMembers.filter(m=>m.event_id===ev.id).length}/{ev.max_players} kişi · {new Date(ev.starts_at).toLocaleString("tr-TR")}</span><small>{ev.description||"Topluluk etkinliği"}</small></div>{ev.creator_id===uid?<span className="hub-tag">Düzenleyici</span>:<button className="hub-small-btn" disabled={busy} onClick={()=>void joinEvent(ev.id)}>Katıl</button>}</article>)}</div>}</div></div>
     </section>
 
     <section className="hub-section">
