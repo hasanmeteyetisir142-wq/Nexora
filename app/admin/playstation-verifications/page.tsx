@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import { ShieldCheck, LoaderCircle, ExternalLink } from "lucide-react";
 
 type RequestItem = {
@@ -14,6 +16,7 @@ type RequestItem = {
 };
 
 export default function PlayStationVerificationReview() {
+  const router = useRouter();
   const [items, setItems] = useState<RequestItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState("");
@@ -31,7 +34,26 @@ export default function PlayStationVerificationReview() {
     finally { setLoading(false); }
   }
 
-  useEffect(() => { void load(); }, []);
+  useEffect(() => {
+    let active = true;
+    async function checkAdminLogin() {
+      if (sessionStorage.getItem("nexora-admin-login") !== "1") {
+        router.replace("/admin/login");
+        return;
+      }
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!active) return;
+      if (user?.email?.toLowerCase() !== "hasanmeteyetisir142@gmail.com") {
+        sessionStorage.removeItem("nexora-admin-login");
+        router.replace("/admin/login");
+        return;
+      }
+      void load();
+    }
+    void checkAdminLogin();
+    return () => { active = false; };
+  }, [router]);
 
   async function review(id: string, decision: "approve" | "reject") {
     setBusy(id); setError(""); setMessage("");
@@ -49,7 +71,7 @@ export default function PlayStationVerificationReview() {
   }
 
   return <main className="social-page"><section className="social-wrap">
-    <div className="social-heading"><div className="social-icon"><ShieldCheck/></div><div><div className="social-eyebrow">NEXORA YÖNETİM</div><h1>PSN doğrulama incelemeleri</h1><p>Profildeki kodu kontrol edip hesabı onayla veya reddet.</p></div></div>
+    <div className="social-heading"><div className="social-icon"><ShieldCheck/></div><div><div className="social-eyebrow">NEXORA YÖNETİM</div><h1>PSN doğrulama incelemeleri</h1><p>Profildeki kodu kontrol edip hesabı onayla veya reddet.</p></div><button className="social-secondary" onClick={async () => { sessionStorage.removeItem("nexora-admin-login"); await createClient().auth.signOut(); router.replace("/admin/login"); }}>Çıkış yap</button></div></div>
     {error && <div className="social-alert error">{error}</div>}
     {message && <div className="social-alert success">{message}</div>}
     {loading ? <div className="social-card social-empty"><LoaderCircle/> Yükleniyor...</div> : items.length === 0 ? <div className="social-card social-empty">Bekleyen doğrulama isteği yok.</div> : items.map(item => <article className="social-card" key={item.id}>
