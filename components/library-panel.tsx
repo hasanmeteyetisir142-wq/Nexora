@@ -197,7 +197,7 @@ export default function LibraryPanel() {
               <button className="social-primary" type="button" onClick={confirmVerification} disabled={verificationBusy}>{verificationBusy ? <LoaderCircle size={15}/> : <ShieldCheck size={15}/>} PSN profilimi kontrol et</button>
             </>}
             <small>Kod 30 dakika geçerlidir. Profilin herkese açık değilse doğrulama yapılamayabilir.</small>
-          </div></>} : <form className="psn-connect-form" onSubmit={connectPlayStation}>
+          </div>}</> : <form className="psn-connect-form" onSubmit={connectPlayStation}>
             <p>PSN Online ID'ni buraya yaz. Bu işlem Sony hesabına giriş yapmaz; hesabın sana ait olduğunu doğrulayamaz ve PlayStation oyunlarını getirmez.</p>
             <label htmlFor="psn-online-id">PSN Online ID</label>
             <input id="psn-online-id" name="onlineId" autoComplete="off" maxLength={16} value={onlineId} onChange={(event) => setOnlineId(event.target.value)} placeholder="Örn. Oyuncu_123" />
