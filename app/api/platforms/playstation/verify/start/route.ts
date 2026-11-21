@@ -20,6 +20,11 @@ export async function POST() {
     verification_code: code,
     verification_expires_at: expiresAt,
     psn_about_me: null,
+    verification_status: "unverified",
+    verification_profile_url: null,
+    verification_submitted_at: null,
+    verification_reviewed_at: null,
+    verification_review_note: null,
     updated_at: new Date().toISOString(),
   }).eq("user_id", user.id).eq("platform", "playstation");
 
