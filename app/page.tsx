@@ -8,13 +8,14 @@ import NotificationBell from "@/components/notification-bell";
 import {
   Activity, ArrowRight, Bell, ChevronDown, Compass, Gamepad2, Headphones,
   Home, MessageCircle, Plus, Search, Settings, ShieldCheck, Sparkles,
-  Swords, Trophy, Users, Wallet, Zap, Menu, X, MoreHorizontal, Play,
+  Swords, Trophy, Users, Wallet, Zap, Gift, Menu, X, MoreHorizontal, Play,
   Radio, Globe2, CircleDot, LogOut, UserRound
 } from "lucide-react";
 
 const nav = [
   { label: "Genel Bakış", icon: Home },
   { label: "Oyunları Keşfet", icon: Compass },
+  { label: "Oyun Merkezi", icon: Gift, href: "/play" },
   { label: "Arkadaşlar", icon: Users, href: "/friends" },
   { label: "Mesajlar", icon: MessageCircle, href: "/messages" },
   { label: "Topluluk", icon: Globe2, href: "/community" },
