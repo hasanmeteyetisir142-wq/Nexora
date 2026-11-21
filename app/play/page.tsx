@@ -19,7 +19,8 @@ export default function PlayHubPage(){
   const [uid,setUid]=useState("");
   const [tasks,setTasks]=useState<Task[]>([]);
   const [claimed,setClaimed]=useState<string[]>([]);
-  const [xp,setXp]=useState(0);\n  const [coins,setCoins]=useState(0);
+  const [xp,setXp]=useState(0);
+  const [coins,setCoins]=useState(0);
   const [sessions,setSessions]=useState<Session[]>([]);
   const [events,setEvents]=useState<EventItem[]>([]);
   const [posts,setPosts]=useState<Post[]>([]);
