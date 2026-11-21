@@ -62,8 +62,14 @@ export default function PublicProfile({ username }: { username: string }) {
           {!data.visibility.library ? <p className="social-empty">Bu oyuncu oyun kütüphanesini gizlemiştir.</p> : data.games.length ? <div className="steam-game-grid">{data.games.map(game => <article className="steam-game-card" key={game.appid}>{game.img_icon_url ? <img src={`https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`} alt=""/> : <div className="steam-game-placeholder"><Gamepad2/></div>}<div><b>{game.name}</b><span>{Math.round((game.playtime_forever || 0)/60)} saat oynandı</span></div></article>)}</div> : <p className="social-empty">{data.library_message || (data.platforms.some(platform => platform.platform === "playstation") ? "PSN hesabı bağlı; ancak Sony herkese açık oyun kütüphanesi verisi sağlamadığı için PlayStation oyunları şu anda otomatik listelenemiyor." : "Paylaşılacak oyun bulunamadı.")}</p>}
         </section>
         <section className="social-card">
-          <div className="social-card-head"><h2><Trophy size={17}/> Başarımlar ve çevrim içi durumu</h2></div>
-          <p className="social-empty">{!data.visibility.achievements ? "Başarımlar bu oyuncu tarafından gizlenmiştir." : "Başarım entegrasyonu henüz etkin değil; veri uydurulmaz."}</p>
+          <div className="social-card-head"><h2><Trophy size={17}/> Oyuncu istatistikleri</h2></div>
+          {!data.visibility.achievements || !data.reward_stats?.visible ? <p className="social-empty">Bu oyuncu oyun istatistiklerini gizlemiştir.</p> : <div className="public-game-stats">
+            <div><b>{data.reward_stats.xp || 0}</b><span>Toplam XP</span></div>
+            <div><b>{data.reward_stats.coins || 0}</b><span>Nexora Jetonu</span></div>
+            <div><b>{data.reward_stats.mini_games_played || 0}</b><span>Mini oyun</span></div>
+            <div><b>{data.reward_stats.best_reflex_score || 0}</b><span>En iyi refleks puanı</span></div>
+          </div>}
+          <p className="social-empty">{!data.visibility.achievements ? "Başarım ve oyun istatistikleri gizli." : "Platform başarımları için resmi veri bağlantısı henüz etkin değil."}</p>
           <p className="social-empty">{!data.visibility.online_status ? "Çevrim içi durumu gizlenmiştir." : "Gerçek zamanlı platform durumu henüz desteklenmiyor."}</p>
         </section>
       </>}
