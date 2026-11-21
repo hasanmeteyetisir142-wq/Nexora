@@ -60,7 +60,7 @@ export default function WorkspaceShell({ children }: { children: React.ReactNode
         return <div key={section.label} className={`nav-section ${expanded ? "expanded" : ""}`} onMouseEnter={() => setHoveredSection(section.label)} onMouseLeave={() => setHoveredSection(current => current === section.label ? "" : current)}>
           <button type="button" className={`nav-section-trigger ${activeSection ? "active" : ""}`} aria-expanded={expanded} onClick={() => setHoveredSection(current => current === section.label ? "" : section.label)}>
             <span>{section.label}</span><ChevronDown size={15}/>
-          </div>
+          </button>
           {expanded && <div className="nav-section-links">{section.items.map(item => {
             const active = isActive(item.href, pathname);
             return <Link key={item.label} href={item.href} onClick={() => {setMobileOpen(false);setHoveredSection("");}} className={`nav-item ${active ? "active" : ""}`}><item.icon size={18}/><span>{item.label}</span></Link>;
