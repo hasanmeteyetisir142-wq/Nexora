@@ -11,6 +11,12 @@ const items = [
   { label: "Genel Bakış", href: "/" , icon: Home },
   { label: "Oyunları Keşfet", href: "/?view=games", icon: Compass },
   { label: "Oyun Merkezi", href: "/play", icon: Gift },
+  { label: "Günlük Görevler", href: "/play/tasks", icon: Gift },
+  { label: "Birlikte Oyna", href: "/play/sessions", icon: Users },
+  { label: "Mini Oyunlar", href: "/play/mini-games", icon: Activity },
+  { label: "Etkinlikler", href: "/play/events", icon: Globe2 },
+  { label: "Oyuncu Akışı", href: "/play/feed", icon: MessageCircle },
+  { label: "Oyun İstek Listesi", href: "/play/wishlist", icon: Gamepad2 },
   { label: "Arkadaşlar", href: "/friends", icon: Users },
   { label: "Mesajlar", href: "/messages", icon: MessageCircle },
   { label: "Topluluk", href: "/community", icon: Globe2 },
@@ -33,7 +39,7 @@ export default function WorkspaceShell({ children }: { children: React.ReactNode
       <div className="brand"><div className="brand-mark"><Sparkles size={19}/></div><span>NEXORA</span><button className="mobile-close" onClick={() => setMobileOpen(false)} aria-label="Menüyü kapat"><X size={19}/></button></div>
       <div className="side-label">MENÜ</div>
       <nav className="nav-list">{items.map(item => {
-        const active = item.href === "/" ? pathname === "/" : item.href.startsWith("/?") ? false : pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href + "/"));
+        const active = item.href === "/" ? pathname === "/" : item.href.startsWith("/?") ? false : item.href === "/play" ? pathname === "/play" : pathname === item.href;
         return <Link key={item.label} href={item.href} onClick={() => setMobileOpen(false)} className={`nav-item ${active ? "active" : ""}`}><item.icon size={18}/><span>{item.label}</span></Link>;
       })}</nav>
       <div className="side-label spaces-label">HESABIN</div>
