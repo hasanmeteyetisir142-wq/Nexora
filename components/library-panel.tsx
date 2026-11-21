@@ -44,6 +44,7 @@ export default function LibraryPanel() {
   const [copied, setCopied] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
   const [verificationInstructions, setVerificationInstructions] = useState("");
+  const [verificationProfileUrl, setVerificationProfileUrl] = useState("");
   const [verificationBusy, setVerificationBusy] = useState(false);
 
   useEffect(() => {
@@ -116,9 +117,12 @@ export default function LibraryPanel() {
   async function confirmVerification() {
     setError(""); setNotice(""); setVerificationBusy(true);
     try {
-      const response = await fetch("/api/platforms/playstation/verify/confirm", { method: "POST", cache: "no-store" });
+      const response = await fetch("/api/platforms/playstation/verify/confirm", { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, cache: "no-store", body: JSON.stringify({ profileUrl: verificationProfileUrl }) });
       const payload = await readApiResponse(response);
-      if (payload.verified) {
+      if (payload.submitted) {
+        setVerificationCode("");
+        setNotice(payload.message || "Doğrulama isteğin incelemeye gönderildi.");
+      } else if (payload.verified) {
         setAccount(current => current ? { ...current, verified_at: new Date().toISOString() } : current);
         setVerificationCode("");
         setNotice(payload.message || "PSN hesabın doğrulandı.");
@@ -190,13 +194,13 @@ export default function LibraryPanel() {
           </div>
           {!account.verified_at && <div className="psn-verification-box">
             <b><ShieldCheck size={16}/> PSN hesabını doğrula</b>
-            <p>Geçici kodu PlayStation profilindeki Hakkımda alanına ekle. Nexora, herkese açık profilde kodu bulursa hesabın sana ait olduğunu doğrular.</p>
+            <p>Geçici kodu PSN profilindeki Hakkımda alanına ekle. Ardından resmi PlayStation profil bağlantını gönder. Sony profil servisi otomatik erişimi engellediği için isteğin incelemeye alınacak.</p>
             {!verificationCode ? <button className="social-primary" type="button" onClick={startVerification} disabled={verificationBusy}>{verificationBusy ? <LoaderCircle size={15}/> : null} Doğrulama kodu oluştur</button> : <>
               <div className="psn-verification-code"><code>{verificationCode}</code><button type="button" className="friend-action" onClick={() => void navigator.clipboard.writeText(verificationCode)}><Copy size={14}/> Kodu kopyala</button></div>
               <p>{verificationInstructions}</p>
               <button className="social-primary" type="button" onClick={confirmVerification} disabled={verificationBusy}>{verificationBusy ? <LoaderCircle size={15}/> : <ShieldCheck size={15}/>} PSN profilimi kontrol et</button>
             </>}
-            <small>Kod 30 dakika geçerlidir. Profilin herkese açık değilse doğrulama yapılamayabilir.</small>
+            <small>Kod 30 dakika geçerlidir. İstek gönderildikten sonra profil ve kod yetkili kişi tarafından kontrol edilir.</small>
           </div>}</> : <form className="psn-connect-form" onSubmit={connectPlayStation}>
             <p>PSN Online ID'ni buraya yaz. Bu işlem Sony hesabına giriş yapmaz; hesabın sana ait olduğunu doğrulayamaz ve PlayStation oyunlarını getirmez.</p>
             <label htmlFor="psn-online-id">PSN Online ID</label>
@@ -207,7 +211,7 @@ export default function LibraryPanel() {
             <p><ShieldCheck size={14}/> Bu ID, profil gizlilik ayarların izin veriyorsa diğer Nexora oyuncularına görünür.</p>
             {username ? <Link className="social-secondary" href={"/u/" + encodeURIComponent(username)}><ExternalLink size={15}/> Nexora profilimi görüntüle</Link> : <Link className="social-secondary" href="/profile">Profil kullanıcı adını ayarla</Link>}
           </div>}
-          <p className="privacy-note"><ShieldCheck size={14}/> Nexora, PSN şifreni veya oturum anahtarını istemez. Doğrulama yalnızca herkese açık profilindeki geçici kodla yapılır.</p>
+          <p className="privacy-note"><ShieldCheck size={14}/> Nexora, PSN şifreni veya oturum anahtarını istemez. Sony API erişimi olmadığı için doğrulama isteği manuel incelenir.</p>
         </div>}
       </section>
 
