@@ -32,7 +32,7 @@ export default function PlayHubPage(){
   const [reaction,setReaction]=useState<number|null>(null);
   const [lastScore,setLastScore]=useState<number|null>(null);
   const timer=useRef<ReturnType<typeof setTimeout>|null>(null);
-  const started=useRef(0);
+  const [challengeId,setChallengeId]=useState<string|null>(null);
   const [sessionGame,setSessionGame]=useState("Minecraft");
   const [sessionPlatform,setSessionPlatform]=useState("PC");
   const [sessionSlots,setSessionSlots]=useState(4);
@@ -117,15 +117,16 @@ export default function PlayHubPage(){
   function startGame(){
     if(timer.current)clearTimeout(timer.current);
     setReaction(null);setLastScore(null);setGame("waiting");
-    timer.current=setTimeout(()=>{started.current=Date.now();setGame("ready");},1800+Math.floor(Math.random()*2600));
+    timer.current=setTimeout(()=>{void (async()=>{const {data,error:e}=await supabase.rpc("nexora_start_reflex_challenge");if(e){setError(e.message);setGame("done");return;}setChallengeId(data);setGame("ready");})();},1800+Math.floor(Math.random()*2600));
   }
   async function hitGame(){
     if(game==="waiting"){if(timer.current)clearTimeout(timer.current);setGame("done");setReaction(-1);setError("Çok erken! Bir sonraki denemede yeşil ışığı bekle.");return;}
     if(game!=="ready")return;
-    const ms=Date.now()-started.current;const score=Math.max(0,Math.min(1000,Math.round(1000-ms*2)));
-    setReaction(ms);setLastScore(score);setGame("done");setBusy(true);setError("");
-    const {error:e}=await supabase.rpc("nexora_submit_daily_game_score",{p_score:score});
-    if(e)setError(e.message);else{setNotice(`Tepki süren ${ms} ms · ${score} puan kaydedildi.`);if(uid)await load(uid);}
+    if(!challengeId){setError("Deneme doğrulanamadı. Yeniden başlat.");setGame("done");return;}
+    setGame("done");setBusy(true);setError("");
+    const {data,error:e}=await supabase.rpc("nexora_finish_reflex_challenge",{p_challenge_id:challengeId});
+    setChallengeId(null);
+    if(e)setError(e.message);else{setReaction(data.elapsed_ms);setLastScore(data.score);setNotice(`Tepki süren ${data.elapsed_ms} ms · ${data.score} puan kaydedildi.`);if(uid)await load(uid);}
     setBusy(false);
   }
   const claimedCount=claimed.length;
