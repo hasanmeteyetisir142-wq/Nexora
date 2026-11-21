@@ -9,7 +9,7 @@ type Task = { id:string; task_key:string; title:string; description:string; rewa
 type Session = { id:string; host_id:string; game_name:string; platform:string; slots_total:number; starts_at:string; note:string; status:string; profiles?:{display_name:string|null;username:string|null} };
 type EventItem = { id:string; creator_id:string; title:string; description:string; game_name:string; starts_at:string; max_players:number };
 type SessionMember = { id:string; session_id:string; user_id:string; status:string; display_name?:string|null; username?:string|null };
-type Post = { id:string; user_id:string; body:string; created_at:string };
+type Post = { id:string; user_id:string; body:string; created_at:string; display_name?:string|null; username?:string|null };
 type Score = { user_id:string; score:number };
 type Wish = { id:string; game_name:string; platform:string };
 
@@ -74,7 +74,12 @@ export default function PlayHubPage(){
     const eventRows=e.data||[];setEvents(eventRows);
     const eventMemberResult=eventRows.length?await supabase.from("nexora_event_participants").select("event_id,user_id").in("event_id",eventRows.map(row=>row.id)):{data:[],error:null};
     if(eventMemberResult.error)setError(eventMemberResult.error.message);setEventMembers(eventMemberResult.data||[]);
-    setPosts(p.data||[]);setWishes(w.data||[]);setScores(sc.data||[]);
+    const postRows=p.data||[];
+    if(postRows.length){
+      const {data:postProfiles}=await supabase.from("profiles").select("id,display_name,username").in("id",[...new Set(postRows.map(row=>row.user_id))]);
+      setPosts(postRows.map(row=>{const profile=(postProfiles||[]).find(person=>person.id===row.user_id);return {...row,display_name:profile?.display_name,username:profile?.username};}));
+    }else setPosts([]);
+    setWishes(w.data||[]);setScores(sc.data||[]);
   },[supabase]);
 
   useEffect(()=>{
@@ -183,7 +188,7 @@ export default function PlayHubPage(){
 
     <section className="hub-section">
       <div className="hub-title"><div><span className="eyebrow">PAYLAŞ VE KEŞFET</span><h2><MessageSquare size={20}/> Oyuncu akışı</h2></div></div>
-      <div className="hub-card"><form className="hub-post-form" onSubmit={createPost}><textarea value={postDraft} onChange={e=>setPostDraft(e.target.value)} maxLength={1000} placeholder="Bugün ne oynuyorsun? Bir şey paylaş..." required/><button className="hub-primary" disabled={busy||!postDraft.trim()}><Send size={15}/> Paylaş</button></form>{posts.length===0?<p className="hub-empty">Akışta henüz gönderi yok. İlk paylaşımı sen yap!</p>:<div className="hub-feed">{posts.map(p=><article key={p.id}><div className="hub-feed-avatar">{p.user_id===uid?"S":"N"}</div><div><b>{p.user_id===uid?"Sen":`Oyuncu ${p.user_id.slice(0,4)}`}</b><time>{new Date(p.created_at).toLocaleString("tr-TR")}</time><p>{p.body}</p></div></article>)}</div>}</div>
+      <div className="hub-card"><form className="hub-post-form" onSubmit={createPost}><textarea value={postDraft} onChange={e=>setPostDraft(e.target.value)} maxLength={1000} placeholder="Bugün ne oynuyorsun? Bir şey paylaş..." required/><button className="hub-primary" disabled={busy||!postDraft.trim()}><Send size={15}/> Paylaş</button></form>{posts.length===0?<p className="hub-empty">Akışta henüz gönderi yok. İlk paylaşımı sen yap!</p>:<div className="hub-feed">{posts.map(p=><article key={p.id}><div className="hub-feed-avatar">{p.user_id===uid?"S":"N"}</div><div><b>{p.user_id===uid?"Sen":p.display_name||p.username||"Nexora oyuncusu"}</b><time>{new Date(p.created_at).toLocaleString("tr-TR")}</time><p>{p.body}</p></div></article>)}</div>}</div>
     </section>
 
     <section className="hub-section">
