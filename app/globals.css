@@ -336,3 +336,9 @@ button.platform-launch{cursor:pointer}
 .public-game-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:12px 0}.public-game-stats>div{border:1px solid #30364a;background:#151a29;border-radius:9px;padding:13px;display:grid;gap:5px}.public-game-stats b{font:700 20px 'Space Grotesk';color:#c5b5ff}.public-game-stats span{font-size:9px;color:#8d96aa}@media(max-width:560px){.public-game-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
 .hub-session-host{display:flex;align-items:center;justify-content:flex-end;gap:6px;flex-wrap:wrap}.hub-session-host .hub-small-btn{padding:6px 8px;font-size:9px}
+
+
+.playhub-tabs{display:flex;gap:8px;overflow-x:auto;padding:10px 0 16px;margin:4px 0 22px;border-bottom:1px solid #292e40;scrollbar-width:thin}
+.playhub-tabs a{flex:0 0 auto;text-decoration:none;color:#9da5b8;border:1px solid #30364a;background:#151a29;border-radius:9px;padding:10px 14px;font-size:12px;font-weight:650;transition:background .15s,border-color .15s,color .15s}
+.playhub-tabs a:hover{color:#fff;border-color:#7464aa}
+.playhub-tabs a.active{background:#30274d;color:#e4d9ff;border-color:#8b72d5;box-shadow:0 0 0 1px #8b72d522 inset}
