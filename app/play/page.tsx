@@ -96,7 +96,7 @@ export default function PlayHubPage(){
     setBusy(false);
   }
   async function reviewSessionRequest(memberId:string){
-    setBusy(true);setError("");const {error:e}=await supabase.from("play_session_members").update({status:"accepted"}).eq("id",memberId);
+    setBusy(true);setError("");const {error:e}=await supabase.rpc("nexora_review_session_request",{p_member_id:memberId});
     if(e)setError(e.message);else{setNotice("Oyuncu ekibe kabul edildi.");if(uid)await load(uid);}
     setBusy(false);
   }
