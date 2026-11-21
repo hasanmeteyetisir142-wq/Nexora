@@ -19,7 +19,7 @@ export default function PlayHubPage(){
   const [uid,setUid]=useState("");
   const [tasks,setTasks]=useState<Task[]>([]);
   const [claimed,setClaimed]=useState<string[]>([]);
-  const [xp,setXp]=useState(0);
+  const [xp,setXp]=useState(0);\n  const [coins,setCoins]=useState(0);
   const [sessions,setSessions]=useState<Session[]>([]);
   const [events,setEvents]=useState<EventItem[]>([]);
   const [posts,setPosts]=useState<Post[]>([]);
@@ -49,7 +49,7 @@ export default function PlayHubPage(){
     const [t,c,r,s,e,p,w,sc]=await Promise.all([
       supabase.from("nexora_daily_tasks").select("id,task_key,title,description,reward_xp,active").eq("active",true),
       supabase.from("nexora_task_claims").select("task_id").eq("user_id",userId).eq("claim_date",day),
-      supabase.from("nexora_user_rewards").select("xp").eq("user_id",userId).maybeSingle(),
+      supabase.from("nexora_user_rewards").select("xp,coins").eq("user_id",userId).maybeSingle(),
       supabase.from("play_sessions").select("id,host_id,game_name,platform,slots_total,starts_at,note,status").eq("status","open").order("created_at",{ascending:false}).limit(30),
       supabase.from("nexora_events").select("id,creator_id,title,description,game_name,starts_at,max_players").gte("starts_at",new Date().toISOString()).order("starts_at").limit(20),
       supabase.from("activity_posts").select("id,user_id,body,created_at").order("created_at",{ascending:false}).limit(25),
@@ -58,7 +58,7 @@ export default function PlayHubPage(){
     ]);
     const firstError=[t.error,c.error,r.error,s.error,e.error,p.error,w.error,sc.error].find(Boolean);
     if(firstError) setError(firstError.message);
-    setTasks(t.data||[]);setClaimed((c.data||[]).map(x=>x.task_id));setXp(r.data?.xp||0);
+    setTasks(t.data||[]);setClaimed((c.data||[]).map(x=>x.task_id));setXp(r.data?.xp||0);setCoins(r.data?.coins||0);
     setSessions(s.data||[]);setEvents(e.data||[]);setPosts(p.data||[]);setWishes(w.data||[]);setScores(sc.data||[]);
   },[supabase]);
 
@@ -76,7 +76,7 @@ export default function PlayHubPage(){
     setBusy(true);setError("");setNotice("");
     const {data,error:e}=await supabase.rpc("nexora_claim_daily_task",{p_task_id:task.id});
     if(e)setError(e.message);
-    else{setNotice(`+${data.xp_added} XP kazandın!`);if(uid)await load(uid);}
+    else{setNotice(`+${data.xp_added} XP ve +${data.coins_added} Nexora Jetonu kazandın!`);if(uid)await load(uid);}
     setBusy(false);
   }
   async function createSession(e:FormEvent){
@@ -134,13 +134,13 @@ export default function PlayHubPage(){
   const rankName=(id:string)=>id===uid?"Sen":`Oyuncu ${id.slice(0,4)}`;
 
   return <WorkspaceShell><main className="content playhub">
-    <div className="playhub-head"><div><div className="eyebrow"><Sparkles size={13}/> NEXORA OYUN MERKEZİ</div><h1>Her gün yeni bir macera.</h1><p className="subheading">Ekip bul, görevleri tamamla, XP kazan ve günün mini oyununda rekor kır.</p></div><div className="xp-pill"><Trophy size={18}/><span><b>{xp} XP</b><small>Oyuncu seviyesi puanın</small></span></div></div>
+    <div className="playhub-head"><div><div className="eyebrow"><Sparkles size={13}/> NEXORA OYUN MERKEZİ</div><h1>Her gün yeni bir macera.</h1><p className="subheading">Ekip bul, görevleri tamamla, XP kazan ve günün mini oyununda rekor kır.</p></div><div className="xp-pill"><Trophy size={18}/><span><b>{xp} XP</b><small>Oyuncu seviyesi puanın</small></span><span className="coin-count"><b>◈ {coins}</b><small>Nexora Jetonu</small></span></div></div>
     {error&&<div className="hub-alert hub-error">{error}<button onClick={()=>setError("")}><X size={15}/></button></div>}
     {notice&&<div className="hub-alert hub-success">{notice}<button onClick={()=>setNotice("")}><X size={15}/></button></div>}
 
     <section className="hub-section">
       <div className="hub-title"><div><span className="eyebrow">BUGÜNÜN HEDEFLERİ</span><h2><Gift size={20}/> Günlük görevler</h2></div><span className="hub-counter">{claimedCount}/{tasks.length} tamamlandı</span></div>
-      <div className="hub-task-grid">{tasks.map(task=><article className={`hub-task ${taskDone(task)?"task-complete":""}`} key={task.id}><div className="hub-task-icon"><Check size={17}/></div><div className="hub-task-copy"><b>{task.title}</b><p>{task.description}</p><small>+{task.reward_xp} XP</small></div><button disabled={busy||taskDone(task)} onClick={()=>void claim(task)}>{taskDone(task)?"Alındı":"Ödülü al"}</button></article>)}</div>
+      <div className="hub-task-grid">{tasks.map(task=><article className={`hub-task ${taskDone(task)?"task-complete":""}`} key={task.id}><div className="hub-task-icon"><Check size={17}/></div><div className="hub-task-copy"><b>{task.title}</b><p>{task.description}</p><small>+{task.reward_xp} XP · +{Math.max(1,Math.floor(task.reward_xp/5))} Jeton</small></div><button disabled={busy||taskDone(task)} onClick={()=>void claim(task)}>{taskDone(task)?"Alındı":"Ödülü al"}</button></article>)}</div>
     </section>
 
     <section className="hub-section">
