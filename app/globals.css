@@ -270,3 +270,40 @@ button.platform-launch{cursor:pointer}
 .nexora-bot-copy p{margin:2px 0;color:#b4bac9;font-size:10px;line-height:1.5}
 .nexora-bot-copy em{font-size:9px;color:#a995ff;font-style:normal}
 @media(max-width:650px){.nexora-bot-grid{grid-template-columns:1fr;padding:0 12px 12px}}
+
+/* Community and notification interactions */
+.notification-wrap{position:relative;display:flex;align-items:center}
+.notification-popover{position:absolute;right:-8px;top:42px;width:min(370px,calc(100vw - 30px));max-height:480px;overflow:auto;background:#121725;border:1px solid #30364a;border-radius:12px;box-shadow:0 18px 55px #000b;z-index:30;padding:10px}
+.notification-head{display:flex;align-items:center;justify-content:space-between;padding:7px 5px 12px;border-bottom:1px solid #252b3b}
+.notification-head>b{font:600 14px 'Space Grotesk'}
+.notification-head small{font:600 10px 'DM Sans';color:#b8a6ff;margin-left:6px}
+.notification-head button{display:flex;align-items:center;gap:5px;border:0;background:transparent;color:#a99aff;font-size:9px}
+.notification-head button:disabled{opacity:.4}
+.notification-item{display:flex;gap:10px;padding:12px 8px;text-decoration:none;color:#f2f4fa;border-bottom:1px solid #222838}
+.notification-item:hover,.notification-item.unread{background:#9b82ff0c}
+.notification-dot{width:7px;height:7px;flex:0 0 7px;border-radius:50%;background:transparent;margin-top:5px}
+.notification-item.unread .notification-dot{background:#a58dff;box-shadow:0 0 8px #a58dff}
+.notification-item>span:last-child{display:grid;gap:4px}
+.notification-item b{font-size:11px}
+.notification-item small{font-size:10px;color:#929aaf;line-height:1.5}
+.notification-item time{font-size:9px;color:#687187}
+.notification-empty{padding:22px 10px;text-align:center;color:#858da2;font-size:11px}
+.community-create{display:grid;gap:11px;margin:20px 0}
+.community-create input,.community-create textarea,.community-post-form textarea{width:100%;background:#0d111c;border:1px solid #30374a;border-radius:8px;color:#f4f4fa;padding:12px;font:12px 'DM Sans';outline:none}
+.community-create textarea,.community-post-form textarea{min-height:78px;resize:vertical}
+.community-create input:focus,.community-create textarea:focus,.community-post-form textarea:focus{border-color:#9b82ff}
+.community-create .friend-action,.community-post-form .friend-action{justify-self:end}
+.community-layout{display:grid;grid-template-columns:minmax(250px,.85fr) minmax(0,1.15fr);gap:14px;align-items:start}
+.community-row{padding:12px 0;border-top:1px solid #222838;display:flex;align-items:center;gap:10px}
+.community-row.selected{background:#9b82ff0d}
+.community-select{flex:1;min-width:0;display:grid;gap:5px;text-align:left;background:transparent;border:0;padding:4px}
+.community-select b{font-size:12px}.community-select small{font-size:10px;color:#858da2;line-height:1.5}
+.community-actions{display:flex;gap:5px}
+.community-actions button{display:flex;align-items:center;gap:5px;border:1px solid #38334f;background:#211d37;color:#c4b7ff;border-radius:7px;padding:7px 9px;font-size:10px}
+.community-feed{min-height:220px}
+.community-post-form{display:grid;gap:8px;padding:4px 0 14px;border-bottom:1px solid #252b3b}
+.community-post{padding:13px 0;border-bottom:1px solid #222838}
+.community-post>div{display:flex;justify-content:space-between;gap:8px}
+.community-post b{font-size:11px}.community-post time{font-size:9px;color:#737c91}
+.community-post p{font-size:12px;color:#c4cada;white-space:pre-wrap;line-height:1.65;margin:9px 0 0}
+@media(max-width:780px){.community-layout{grid-template-columns:1fr}.notification-popover{right:-60px}}
