@@ -3,13 +3,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, Compass, Gamepad2, Globe2, Home, Menu, MessageCircle, Settings, Sparkles, UserRound, Users, X, LogOut } from "lucide-react";
+import { Activity, Compass, Gamepad2, Gift, Globe2, Home, Menu, MessageCircle, Settings, Sparkles, UserRound, Users, X, LogOut } from "lucide-react";
 import NotificationBell from "@/components/notification-bell";
 import { createClient } from "@/lib/supabase/client";
 
 const items = [
   { label: "Genel Bakış", href: "/" , icon: Home },
   { label: "Oyunları Keşfet", href: "/?view=games", icon: Compass },
+  { label: "Oyun Merkezi", href: "/play", icon: Gift },
   { label: "Arkadaşlar", href: "/friends", icon: Users },
   { label: "Mesajlar", href: "/messages", icon: MessageCircle },
   { label: "Topluluk", href: "/community", icon: Globe2 },
