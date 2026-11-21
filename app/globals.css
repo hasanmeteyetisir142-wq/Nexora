@@ -418,3 +418,29 @@ button.platform-launch{cursor:pointer}
 .community-post-menu button:hover{background:#262d40}
 .community-post-menu button.danger{color:#f1a8b6}
 .community-post-actions{display:none}
+
+
+/* Hover accordion navigation */
+.workspace-nav{display:grid;gap:5px;padding:0 10px}
+.nav-section{position:relative}
+.nav-section-trigger{display:flex;align-items:center;justify-content:space-between;padding:11px 12px;border:1px solid transparent;border-radius:8px;color:#aeb6c9;font-size:10px;font-weight:850;letter-spacing:1.1px;cursor:default;user-select:none}
+.nav-section-trigger>svg{transition:transform .16s}
+.nav-section.expanded .nav-section-trigger{background:#1b2030;border-color:#30364a;color:#e4ddff}
+.nav-section.expanded .nav-section-trigger>svg{transform:rotate(180deg)}
+.nav-section-trigger.active{color:#c8baff}
+.nav-section-links{display:grid;gap:3px;padding:4px 0 7px 8px}
+.nav-section-links .nav-item{display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:8px;color:#aeb6c9;text-decoration:none;font-size:12px}
+.nav-section-links .nav-item:hover,.nav-section-links .nav-item.active{background:#24203a;color:#e6ddff}
+.nav-section-links .nav-item.active{box-shadow:inset 2px 0 #a58dff}
+.community-row-menu-wrap,.message-options-wrap{position:relative;display:flex;align-items:center}
+.community-row-menu-wrap .community-post-menu{top:32px}
+.edited-label{font-size:9px;color:#9b91c1;font-style:italic}
+.message-bubble-meta{display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-top:3px}
+.message-options{display:grid;place-items:center;width:24px;height:24px;border:0;border-radius:6px;background:transparent;color:#8f98ac;cursor:pointer}
+.message-options:hover{background:#34304b;color:#fff}
+.message-options-wrap .community-post-menu{top:25px;bottom:auto;right:0}
+.message-edit-form{display:grid;gap:7px}
+.message-edit-form textarea{width:100%;min-width:180px;min-height:58px;resize:vertical;background:#0d111c;color:#f4f4fa;border:1px solid #514879;border-radius:8px;padding:8px;font:12px inherit}
+.message-edit-form>div{display:flex;gap:6px;justify-content:flex-end}
+.message-edit-form button{display:inline-flex;align-items:center;gap:5px;padding:6px 8px;border:1px solid #514879;border-radius:7px;background:#211d37;color:#ddd4ff;font-size:10px;cursor:pointer}
+@media(max-width:780px){.workspace-nav{gap:3px}.nav-section-trigger{padding:10px}.nav-section-links{padding-left:4px}}
