@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Activity, Compass, Gamepad2, Globe2, Home, Menu, MessageCircle, Settings, Sparkles, UserRound, Users, X, LogOut } from "lucide-react";
+import NotificationBell from "@/components/notification-bell";
 import { createClient } from "@/lib/supabase/client";
 
 const items = [
@@ -11,7 +12,7 @@ const items = [
   { label: "Oyunları Keşfet", href: "/?view=games", icon: Compass },
   { label: "Arkadaşlar", href: "/friends", icon: Users },
   { label: "Mesajlar", href: "/messages", icon: MessageCircle },
-  { label: "Topluluk", href: "/?view=community", icon: Globe2 },
+  { label: "Topluluk", href: "/community", icon: Globe2 },
   { label: "Profilim", href: "/profile", icon: UserRound },
   { label: "Oyun kütüphanem", href: "/library", icon: Gamepad2 },
   { label: "Ayarlar", href: "/settings", icon: Settings },
@@ -38,7 +39,7 @@ export default function WorkspaceShell({ children }: { children: React.ReactNode
       <div className="sidebar-bottom"><div className="profile-mini"><div className="avatar avatar-user"><UserRound size={16}/></div><div className="profile-text"><b>Nexora</b><span>Oyuncu hesabın</span></div><button className="logout-mini" onClick={signOut} disabled={signingOut} aria-label="Çıkış yap" title="Çıkış yap"><LogOut size={16}/><span>{signingOut ? "Çıkılıyor..." : "Çıkış"}</span></button></div></div>
     </aside>
     <section className="main-area workspace-main">
-      <header className="topbar workspace-topbar"><button className="mobile-menu" onClick={() => setMobileOpen(true)} aria-label="Menüyü aç"><Menu size={21}/></button><div className="breadcrumb">NEXORA <span>/</span> <b>{items.find(item => item.href === pathname)?.label?.toUpperCase() || "OYUNCU ALANI"}</b></div><div className="top-actions"><Link className="workspace-home-link" href="/">Genel bakış</Link></div></header>
+      <header className="topbar workspace-topbar"><button className="mobile-menu" onClick={() => setMobileOpen(true)} aria-label="Menüyü aç"><Menu size={21}/></button><div className="breadcrumb">NEXORA <span>/</span> <b>{items.find(item => item.href === pathname)?.label?.toUpperCase() || "OYUNCU ALANI"}</b></div><div className="top-actions"><NotificationBell/><Link className="workspace-home-link" href="/">Genel bakış</Link></div></header>
       {children}
     </section>
   </div>;
