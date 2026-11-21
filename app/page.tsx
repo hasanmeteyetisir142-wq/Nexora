@@ -96,6 +96,7 @@ export default function Dashboard() {
     if (view === "community") setActive("Topluluk");
   }, []);
   const [query, setQuery] = useState("");
+  const [showSearch, setShowSearch] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [joined, setJoined] = useState<string[]>([]);
   const [notice, setNotice] = useState("");
@@ -121,7 +122,7 @@ export default function Dashboard() {
         <header className="topbar">
           <button className="mobile-menu" onClick={() => setMobileOpen(true)}><Menu size={21}/></button>
           <div className="breadcrumb">NEXORA <span>/</span> <b>{active.toUpperCase()}</b></div>
-          <div className="top-actions"><label className="searchbox"><Search size={17}/><input placeholder="Oyun, oyuncu veya topluluk ara..." value={query} onChange={e => setQuery(e.target.value)}/><kbd>⌘ K</kbd></label><NotificationBell/><div className="top-avatar">{accountInitial}</div></div>
+          <div className="top-actions"><div className={`compact-search ${showSearch ? "open" : ""}`}><button type="button" className="compact-search-toggle" aria-label="Arama alanını aç" title="Ara" onClick={() => setShowSearch(value => !value)}><Search size={17}/></button>{showSearch && <div className="compact-search-pop"><Search size={16}/><input autoFocus placeholder="Oyun ara..." value={query} onChange={e => setQuery(e.target.value)}/><button type="button" aria-label="Aramayı kapat" onClick={() => {setShowSearch(false);setQuery("");}}><X size={15}/></button></div>}</div><button className="top-shortcut-btn" type="button" onClick={() => router.push("/messages")} title="Mesajlar"><MessageCircle size={17}/></button><NotificationBell/><div className="top-avatar">{accountInitial}</div></div>
         </header>
 
         {active === "Genel Bakış" ? <div className="content">
