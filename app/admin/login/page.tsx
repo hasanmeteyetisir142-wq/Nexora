@@ -31,7 +31,7 @@ export default function AdminLoginPage() {
         throw new Error("Bu e-posta yönetici hesabı olarak yetkilendirilmemiş.");
       }
       sessionStorage.setItem("nexora-admin-login", "1");
-      router.replace("/admin/playstation-verifications");
+      router.replace("/admin");
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Giriş yapılamadı. Bilgilerini kontrol et.");
