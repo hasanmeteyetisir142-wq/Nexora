@@ -55,7 +55,7 @@ export default function WorkspaceShell({ children }: { children: React.ReactNode
       <div className="side-label">MENÜ</div>
       <nav className="workspace-nav">{sections.map(section => {
         const activeSection = section.items.some(item => isActive(item.href, pathname));
-        return <div key={section.label} className={`nav-section ${activeSection ? "has-active" : ""}`}>
+        return <div key={section.label} className={`nav-section ${activeSection ? "has-active" : ""} ${openSection === section.label ? "expanded" : ""}`}>
           <button type="button" aria-expanded={openSection === section.label} className={`nav-section-trigger ${activeSection ? "active" : ""}`} onClick={() => setOpenSection(current => current === section.label ? null : section.label)}>{section.label}<ChevronDown size={14}/></button>
           <div className={`nav-section-links ${openSection === section.label ? "is-open" : ""}`}>{section.items.map(item => {
             const active = isActive(item.href, pathname);
