@@ -25,9 +25,8 @@ export async function DELETE(request: NextRequest) {
   if (!id || !["community_post", "activity_post", "community"].includes(type)) {
     return NextResponse.json({ error: "Geçersiz moderasyon isteği." }, { status: 400 });
   }
-  const table = type === "community_post" ? "community_posts" : type === "activity_post" ? "activity_posts" : "communities";
-  const { error } = await auth.supabase.from(table).delete().eq("id", id);
-  if (error) return NextResponse.json({ error: "İçerik silinemedi. Veritabanı yetkilerini kontrol et." }, { status: 500 });
-  await auth.supabase.from("nexora_admin_audit").insert({ admin_user_id: auth.user.id, action: "moderation_delete_" + type });
+  const { data, error } = await auth.supabase.rpc("nexora_admin_delete_content", { p_type: type, p_id: id });
+  if (error) return NextResponse.json({ error: error.code === "42501" ? "Yönetici erişimi gerekli." : "İçerik silinemedi." }, { status: error.code === "42501" ? 403 : 500 });
+  if (!data?.success) return NextResponse.json({ error: "Kayıt bulunamadı." }, { status: 404 });
   return NextResponse.json({ success: true });
 }
