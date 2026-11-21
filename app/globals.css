@@ -463,3 +463,43 @@ button.platform-launch{cursor:pointer}
 .workspace-sidebar .sidebar-settings:hover,.workspace-sidebar .sidebar-settings.active{background:#1b2030;color:#e1d8ff;border-color:#39304f}
 .workspace-sidebar .profile-mini{padding:14px 5px 0}
 @media(max-width:760px){.workspace-sidebar{width:260px;min-width:260px}}
+
+/* Nexora game center dashboard */
+.hub-dashboard{display:grid;gap:24px;margin-top:24px}
+.hub-welcome-panel{min-height:250px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;padding:34px 40px;border:1px solid #383052;border-radius:20px;background:radial-gradient(circle at 85% 45%,#49377d88 0,transparent 35%),linear-gradient(120deg,#1c1b32,#141b2b 72%);box-shadow:0 18px 55px #05071155}
+.hub-welcome-copy{position:relative;z-index:1;max-width:570px}
+.hub-welcome-copy h2{font:700 clamp(25px,3vw,36px)/1.12 'Space Grotesk',sans-serif;letter-spacing:-1.2px;margin:12px 0;color:#f5f2ff}
+.hub-welcome-copy p{max-width:500px;color:#aeb4c8;font-size:13px;line-height:1.7;margin:0}
+.hub-welcome-actions{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
+.hub-welcome-actions a{display:inline-flex;align-items:center;gap:8px;padding:11px 15px;border-radius:10px;background:#9b80ff;color:white;text-decoration:none;font-size:12px;font-weight:750}
+.hub-welcome-actions a+ a{background:#29263d;border:1px solid #494063;color:#e1d9ff}
+.hub-welcome-art{width:235px;height:190px;position:relative;display:grid;place-items:center;flex-shrink:0}
+.hub-controller{width:125px;height:125px;border-radius:38px;display:grid;place-items:center;color:#e6dfff;background:linear-gradient(145deg,#9b7cff,#51418e);box-shadow:0 18px 50px #07061199;transform:rotate(-12deg)}
+.hub-orbit{position:absolute;border:1px solid #b9a5ff55;border-radius:50%;transform:rotate(-25deg)}
+.orbit-one{width:210px;height:95px}.orbit-two{width:170px;height:155px;transform:rotate(48deg)}
+.hub-spark{position:absolute;color:#d6c7ff;font-size:25px}.spark-one{top:12px;right:20px}.spark-two{bottom:18px;left:14px}
+.hub-dashboard-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.hub-dashboard-stats>div{padding:17px 18px;border:1px solid #292f42;border-radius:13px;background:linear-gradient(145deg,#171d2c,#121722)}
+.hub-dashboard-stats>div>span{display:block;color:#8992a8;font-size:11px}
+.hub-dashboard-stats>div>b{display:block;margin:8px 0 5px;color:#f3f0ff;font:700 26px 'Space Grotesk',sans-serif}
+.hub-dashboard-stats small{display:flex;align-items:center;gap:5px;color:#a89ad4;font-size:10px}
+.hub-dashboard-heading{display:flex;align-items:end;justify-content:space-between}
+.hub-dashboard-heading h2{font:700 23px 'Space Grotesk',sans-serif;margin:5px 0 0;color:#f0eff8}
+.hub-dashboard-heading>span{color:#7f899f;font-size:11px}
+.hub-feature-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.hub-feature-card{min-height:170px;display:flex;flex-direction:column;align-items:flex-start;padding:19px;border:1px solid #2a3042;border-radius:15px;background:linear-gradient(145deg,#1a2030,#131823);text-decoration:none;transition:transform .18s,border-color .18s,background .18s}
+.hub-feature-card:hover{transform:translateY(-3px);border-color:#7662b2;background:linear-gradient(145deg,#24243a,#161b2a)}
+.hub-feature-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:12px;background:#9b80ff20;color:#c7b4ff;margin-bottom:13px}
+.hub-feature-card>b{color:#f0eff8;font-size:14px}
+.hub-feature-card>p{color:#929bb0;font-size:11px;line-height:1.55;margin:6px 0 13px}
+.hub-feature-link{margin-top:auto;color:#bcaaff;font-size:11px;font-weight:700}
+.hub-feature-link span{margin-left:5px}
+.hub-dashboard-bottom{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.hub-dashboard-row{display:flex;align-items:center;gap:11px;padding:11px 0;border-top:1px solid #252b3a}
+.hub-dashboard-row>div{display:grid;gap:4px}
+.hub-dashboard-row b{color:#e9e9f3;font-size:12px}
+.hub-dashboard-row small{color:#8e98ad;font-size:10px}
+.hub-date-chip{min-width:43px;padding:8px 5px;text-align:center;border-radius:9px;background:#29243e;color:#d6c7ff;font-size:10px;font-weight:800}
+.hub-card-heading a{color:#bbaaff;text-decoration:none;font-size:10px}
+@media(max-width:900px){.hub-feature-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hub-welcome-art{opacity:.65;width:175px}}
+@media(max-width:620px){.hub-welcome-panel{padding:25px 22px}.hub-welcome-art{display:none}.hub-dashboard-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.hub-feature-grid{grid-template-columns:1fr}.hub-dashboard-bottom{grid-template-columns:1fr}.hub-dashboard-heading>span{display:none}}
