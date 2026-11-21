@@ -20,6 +20,11 @@ export async function POST(request: NextRequest) {
       display_name: onlineId,
       avatar_url: null,
       profile_url: null,
+      verification_code: null,
+      verification_expires_at: null,
+      verified_at: null,
+      psn_account_id: null,
+      psn_about_me: null,
       updated_at: new Date().toISOString(),
     }, { onConflict: "user_id,platform" })
       .select("id,platform_user_id,display_name,avatar_url,profile_url")
