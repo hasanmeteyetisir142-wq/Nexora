@@ -99,15 +99,15 @@ export default function MessagesPage() {
   return <WorkspaceShell><main className="social-page">
     <section className="messages-wrap">
       <div className="social-heading"><div className="social-icon"><MessageCircle/></div><div><div className="social-eyebrow">EKİBİNLE İLETİŞİMDE KAL</div><h1>Mesajlar</h1><p>Yalnızca kabul ettiğin arkadaşlarınla özel sohbet et.</p></div></div>
-      <div className="messages-layout">
-        <aside className="social-card messages-people"><div className="social-card-head"><h2><Users size={17}/> Arkadaşların</h2><span>{people.length}</span></div>
+      <div className={`messages-layout ${selected ? "has-selected" : ""}`}>
+        <aside className="social-card messages-people"><div className="social-card-head"><h2><Users size={17}/> Sohbetler</h2><span>{people.length}</span></div>
           {loading ? <p className="social-empty"><LoaderCircle className="spin" size={17}/> Yükleniyor...</p> : people.length === 0 ? <p className="social-empty">Sohbet etmek için önce arkadaş ekle.</p> : people.map(person => <button key={person.id} className={`message-person ${selected?.id === person.id ? "selected" : ""}`} onClick={() => {setSelected(person);setError("");}}>
             <span className="friend-person-avatar">{person.avatar_url ? <img src={person.avatar_url} alt=""/> : <span>{display(person).slice(0,1).toUpperCase()}</span>}</span><span className="message-person-copy"><b>{display(person)}</b><small>@{person.username || "oyuncu"}</small></span>
           </button>)}
         </aside>
         <section className="social-card messages-chat">
           {!selected ? <div className="messages-empty"><MessageCircle size={32}/><h2>Bir sohbet seç</h2><p>Soldan bir arkadaşını seçerek mesajlaşmaya başlayabilirsin.</p></div> : <>
-            <div className="messages-chat-head"><span className="friend-person-avatar">{selected.avatar_url ? <img src={selected.avatar_url} alt=""/> : <span>{display(selected).slice(0,1).toUpperCase()}</span>}</span><div><b>{display(selected)}</b><small>@{selected.username || "oyuncu"}</small></div></div>
+            <div className="messages-chat-head"><button className="messages-back" type="button" aria-label="Sohbet listesine dön" onClick={() => setSelected(null)}><ArrowLeft size={18}/></button><span className="friend-person-avatar">{selected.avatar_url ? <img src={selected.avatar_url} alt=""/> : <span>{display(selected).slice(0,1).toUpperCase()}</span>}</span><div><b>{display(selected)}</b><small>@{selected.username || "oyuncu"}</small></div></div>
             <div className="messages-stream">{messages.length === 0 ? <p className="social-empty">Henüz mesaj yok. İlk mesajı sen gönder!</p> : messages.map(m => <div key={m.id} className={`message-bubble ${m.sender_id === uid ? "mine" : ""}`}>
               {editingMessage === m.id ? <div className="message-edit-form"><textarea value={editBody} onChange={e=>setEditBody(e.target.value)} maxLength={2000}/><div><button onClick={()=>void saveEditedMessage(m.id)} disabled={savingMessage||!editBody.trim()}><Save size={13}/> Kaydet</button><button onClick={()=>{setEditingMessage("");setEditBody("");}}><X size={13}/> İptal</button></div></div> : <p>{m.body}</p>}
               <div className="message-bubble-meta"><time>{new Date(m.created_at).toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"})}{m.edited_at&&<span className="edited-label"> · düzenlendi</span>}</time>
