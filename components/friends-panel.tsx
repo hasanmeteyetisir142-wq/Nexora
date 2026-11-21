@@ -2,16 +2,24 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Bot, Check, LoaderCircle, Search, UserPlus, Users, X } from "lucide-react";
+import { Check, LoaderCircle, Search, UserPlus, Users, X, Sparkles } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 type Profile={id:string;username:string|null;display_name:string|null;avatar_url:string|null;bio?:string|null};
 type Friendship={id:string;requester_id:string;addressee_id:string;status:string;requester?:Profile;addressee?:Profile};
-const nexoraBots=[
- {name:"Nexora Rehberi",handle:"nexora_rehber",bio:"Nexora özelliklerini keşfetmene yardım eder.",role:"Yardım botu"},
- {name:"Takım Bulucu",handle:"takim_bulucu",bio:"Birlikte oynamak için oyun ve takım önerileri sunar.",role:"Oyun botu"},
- {name:"Etkinlik Asistanı",handle:"etkinlik_asistani",bio:"Topluluk etkinlikleri ve oyun geceleri için rehberlik eder.",role:"Etkinlik botu"},
- {name:"Güvenlik Rehberi",handle:"guvenlik_rehberi",bio:"Gizlilik ve hesap güvenliği konusunda ipuçları verir.",role:"Yardım botu"},
+const virtualPlayers=[
+ {key:"shadowfox",name:"ShadowFox",handle:"shadowfox",bio:"Rekabetçi oyunları ve yeni ekipleri seviyor.",online:true},
+ {key:"mertx",name:"MertX",handle:"mertx",bio:"Minecraft ve macera oyunlarıyla ilgileniyor.",online:true},
+ {key:"nightwolf",name:"NightWolf",handle:"nightwolf",bio:"Gece oyunlarına katılmayı seviyor.",online:true},
+ {key:"pixelrider",name:"PixelRider",handle:"pixelrider",bio:"Farklı oyunlar keşfediyor.",online:true},
+ {key:"neonblade",name:"NeonBlade",handle:"neonblade",bio:"Aksiyon ve FPS oyunlarını seviyor.",online:true},
+ {key:"lunarfox",name:"LunarFox",handle:"lunarfox",bio:"Takım oyunları için burada.",online:true},
+ {key:"stormbyte",name:"StormByte",handle:"stormbyte",bio:"Oyun dünyasını keşfediyor.",online:false},
+ {key:"frosty",name:"Frosty",handle:"frosty",bio:"Yeni arkadaşlar edinmeyi seviyor.",online:false},
+ {key:"darknova",name:"DarkNova",handle:"darknova",bio:"Bilim kurgu ve macera oyunları.",online:false},
+ {key:"rapidx",name:"RapidX",handle:"rapidx",bio:"Hızlı tempolu oyunları seviyor.",online:false},
+ {key:"skyhunter",name:"SkyHunter",handle:"skyhunter",bio:"Birlikte oyun oynamak için burada.",online:false},
+ {key:"echozen",name:"EchoZen",handle:"echozen",bio:"Sakin ve eğlenceli oyunlar arıyor.",online:false},
 ];
 
 export default function FriendsPanel(){
@@ -22,13 +30,18 @@ export default function FriendsPanel(){
  const [friends,setFriends]=useState<Profile[]>([]);
  const [incoming,setIncoming]=useState<Friendship[]>([]);
  const [outgoing,setOutgoing]=useState<Friendship[]>([]);
+ const [addedVirtual,setAddedVirtual]=useState<string[]>([]);
  const [busy,setBusy]=useState(false);
+ const [adding,setAdding]=useState("");
  const [notice,setNotice]=useState("");
  const [error,setError]=useState("");
 
  async function load(id?:string){
   const me=id||uid;if(!me)return;
-  const {data:rows}=await supabase.from("friendships").select("id,requester_id,addressee_id,status").or(`requester_id.eq.${me},addressee_id.eq.${me}`);
+  const [{data:rows},{data:virtualRows}]=await Promise.all([
+   supabase.from("friendships").select("id,requester_id,addressee_id,status").or(`requester_id.eq.${me},addressee_id.eq.${me}`),
+   supabase.from("virtual_friendships").select("persona_key").eq("user_id",me)
+  ]);
   const all=(rows||[]) as Friendship[];
   const accepted=all.filter(r=>r.status==="accepted");
   const pendingIn=all.filter(r=>r.status==="pending"&&r.addressee_id===me);
@@ -43,6 +56,7 @@ export default function FriendsPanel(){
   setFriends(ids.map(x=>byId.get(x)).filter(Boolean) as Profile[]);
   setIncoming(pendingIn.map(r=>({...r,requester:byId.get(r.requester_id)})));
   setOutgoing(pendingOut.map(r=>({...r,addressee:byId.get(r.addressee_id)})));
+  setAddedVirtual((virtualRows||[]).map((r:any)=>r.persona_key));
  }
  useEffect(()=>{let live=true;(async()=>{const {data:{user}}=await supabase.auth.getUser();if(!user){window.location.href="/login";return;}if(live){setUid(user.id);await load(user.id);}})();return()=>{live=false;};},[supabase]);
  async function search(){
@@ -59,6 +73,17 @@ export default function FriendsPanel(){
   if(e)setError(e.code==="23505"?"Bu oyuncuya zaten istek göndermişsin.":e.message);
   else{setNotice("Arkadaşlık isteği gönderildi.");setResults(old=>old.filter(p=>p.id!==id));await load();}
  }
+ async function addVirtual(key:string){
+  setAdding(key);setError("");setNotice("");
+  const {error:e}=await supabase.from("virtual_friendships").insert({user_id:uid,persona_key:key});
+  if(e)setError(e.code==="23505"?"Bu sanal oyuncu zaten arkadaş listende.":e.message);
+  else{setNotice("Arkadaşlık isteğin otomatik kabul edildi.");await load();}
+  setAdding("");
+ }
+ async function removeVirtual(key:string){
+  const {error:e}=await supabase.from("virtual_friendships").delete().eq("user_id",uid).eq("persona_key",key);
+  if(e)setError(e.message);else{setNotice("Sanal oyuncu arkadaş listesinden çıkarıldı.");await load();}
+ }
  async function accept(id:string){
   const {error:e}=await supabase.from("friendships").update({status:"accepted"}).eq("id",id);
   if(e)setError(e.message);else{setNotice("Arkadaşlık isteği kabul edildi.");await load();}
@@ -74,9 +99,9 @@ export default function FriendsPanel(){
  {results.length>0&&<div className="friend-results">{results.map(p=><div className="friend-person" key={p.id}>{avatar(p)}<div className="friend-person-copy">{p.username ? <Link href={`/u/${p.username}`} className="friend-profile-link"><b>{person(p)}</b></Link> : <b>{person(p)}</b>}<span>@{p.username||"kullanici"}</span></div><button className="friend-action" onClick={()=>send(p.id)}><UserPlus size={15}/> Ekle</button></div>)}</div>}
  </div>
  {error&&<div className="social-alert error">{error}</div>}{notice&&<div className="social-alert success">{notice}</div>}
+ <section className="social-card nexora-bots-card"><div className="social-card-head"><h2><Sparkles size={17}/> Oyuncu önerileri</h2><span>{virtualPlayers.length} PROFİL</span></div><p className="social-empty">Bu bölümdeki profiller Nexora'nın sanal oyuncularıdır. İstek gönderdiğinde arkadaşlığın otomatik kabul edilir.</p><div className="nexora-bot-grid">{virtualPlayers.map(bot=><article className="nexora-bot" key={bot.key}><div className="nexora-bot-avatar">{bot.name.slice(0,1)}</div><div className="nexora-bot-copy"><b>{bot.name}</b><small>@{bot.handle}</small><p>{bot.bio}</p><em>{bot.online?"Çevrimiçi":"Çevrimdışı"} · Sanal profil</em></div>{addedVirtual.includes(bot.key)?<button className="friend-accept" onClick={()=>removeVirtual(bot.key)} title="Arkadaşlıktan çıkar"><Check size={16}/></button>:<button className="friend-action" disabled={adding===bot.key} onClick={()=>addVirtual(bot.key)}>{adding===bot.key?<LoaderCircle className="spin" size={15}/>:<><UserPlus size={15}/> Ekle</>}</button>}</article>)}</div></section>
  <div className="friends-columns"><section className="social-card"><div className="social-card-head"><h2>Gelen istekler</h2><span>{incoming.length}</span></div>{incoming.length===0?<p className="social-empty">Bekleyen arkadaşlık isteğin yok.</p>:incoming.map(r=><div className="friend-person" key={r.id}>{avatar(r.requester)}<div className="friend-person-copy"><b>{person(r.requester)}</b><span>@{r.requester?.username}</span></div><button className="friend-accept" onClick={()=>accept(r.id)} title="Kabul et"><Check size={16}/></button><button className="friend-reject" onClick={()=>remove(r.id)} title="Reddet"><X size={16}/></button></div>)}</section>
  <section className="social-card"><div className="social-card-head"><h2>Gönderilen istekler</h2><span>{outgoing.length}</span></div>{outgoing.length===0?<p className="social-empty">Gönderdiğin bekleyen istek yok.</p>:outgoing.map(r=><div className="friend-person" key={r.id}>{avatar(r.addressee)}<div className="friend-person-copy"><b>{person(r.addressee)}</b><span>İstek bekliyor</span></div><button className="friend-reject" onClick={()=>remove(r.id)} title="İsteği iptal et"><X size={16}/></button></div>)}</section></div>
- <section className="social-card nexora-bots-card"><div className="social-card-head"><h2><Bot size={17}/> Nexora botları</h2><span>{nexoraBots.length} BOT</span></div><p className="social-empty">Bunlar Nexora içindeki yardımcı bot karakterleridir; gerçek kullanıcı veya arkadaş sayısına dahil değildir.</p><div className="nexora-bot-grid">{nexoraBots.map(bot=><article className="nexora-bot" key={bot.handle}><div className="nexora-bot-avatar"><Bot size={18}/></div><div className="nexora-bot-copy"><b>{bot.name}<span>BOT</span></b><small>@{bot.handle}</small><p>{bot.bio}</p><em>{bot.role}</em></div></article>)}</div></section>
- <section className="social-card friends-list-card"><div className="social-card-head"><h2>Arkadaş listen</h2><span>{friends.length}</span></div>{friends.length===0?<p className="social-empty">Henüz arkadaşın yok. Yukarıdan oyuncu arayarak ilk isteğini gönder!</p>:friends.map(p=><div className="friend-person" key={p.id}>{avatar(p)}<div className="friend-person-copy"><b>{person(p)}</b><span>@{p.username||"kullanici"}</span></div><button className="friend-reject" onClick={()=>remove(p.id)} title="Arkadaşlıktan çıkar"><X size={16}/></button></div>)}</section>
+ <section className="social-card friends-list-card"><div className="social-card-head"><h2>Arkadaş listen</h2><span>{friends.length+addedVirtual.length}</span></div>{friends.length===0&&addedVirtual.length===0?<p className="social-empty">Henüz arkadaşın yok. Yukarıdan oyuncu arayarak ilk isteğini gönder!</p>:<>{friends.map(p=><div className="friend-person" key={p.id}>{avatar(p)}<div className="friend-person-copy"><b>{person(p)}</b><span>@{p.username||"kullanici"}</span></div><button className="friend-reject" onClick={()=>remove(p.id)} title="Arkadaşlıktan çıkar"><X size={16}/></button></div>)}{virtualPlayers.filter(p=>addedVirtual.includes(p.key)).map(p=><div className="friend-person" key={p.key}><div className="friend-person-avatar"><span>{p.name.slice(0,1)}</span></div><div className="friend-person-copy"><b>{p.name}</b><span>@{p.handle} · Sanal profil</span></div><button className="friend-reject" onClick={()=>removeVirtual(p.key)} title="Arkadaşlıktan çıkar"><X size={16}/></button></div>)}</>}</section>
  </section></main>;
 }
