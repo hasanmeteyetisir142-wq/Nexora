@@ -42,7 +42,10 @@ export async function POST() {
   const found = candidates.find((item: any) => typeof item?.aboutMe === "string");
   const aboutMe = found?.aboutMe ?? "";
   const returnedId = found?.onlineId ?? profile?.onlineId ?? profile?.profile?.onlineId;
-  if (!returnedId) {\n    return NextResponse.json({ error: "PlayStation profili doğrulanabilir Online ID bilgisi döndürmedi. Profil gizlilik ayarlarını kontrol et." }, { status: 502 });\n  }\n  if (String(returnedId).toLowerCase() !== account.platform_user_id.toLowerCase()) {
+  if (!returnedId) {
+    return NextResponse.json({ error: "PlayStation profili doğrulanabilir Online ID bilgisi döndürmedi. Profil gizlilik ayarlarını kontrol et." }, { status: 502 });
+  }
+  if (String(returnedId).toLowerCase() !== account.platform_user_id.toLowerCase()) {
     return NextResponse.json({ error: "PSN servisinden farklı bir hesap döndü. Güvenlik için doğrulama durduruldu." }, { status: 409 });
   }
   if (typeof aboutMe !== "string" || !aboutMe.toUpperCase().includes(account.verification_code.toUpperCase())) {
