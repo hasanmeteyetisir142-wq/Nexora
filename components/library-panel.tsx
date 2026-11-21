@@ -198,7 +198,19 @@ export default function LibraryPanel() {
             {!verificationCode ? <button className="social-primary" type="button" onClick={startVerification} disabled={verificationBusy}>{verificationBusy ? <LoaderCircle size={15}/> : null} Doğrulama kodu oluştur</button> : <>
               <div className="psn-verification-code"><code>{verificationCode}</code><button type="button" className="friend-action" onClick={() => void navigator.clipboard.writeText(verificationCode)}><Copy size={14}/> Kodu kopyala</button></div>
               <p>{verificationInstructions}</p>
-              <button className="social-primary" type="button" onClick={confirmVerification} disabled={verificationBusy}>{verificationBusy ? <LoaderCircle size={15}/> : <ShieldCheck size={15}/>} PSN profilimi kontrol et</button>
+              <label htmlFor="psn-verification-profile">PlayStation profil bağlantısı</label>
+              <input
+                id="psn-verification-profile"
+                type="url"
+                inputMode="url"
+                autoComplete="url"
+                value={verificationProfileUrl}
+                onChange={(event) => setVerificationProfileUrl(event.target.value)}
+                placeholder="https://profile.playstation.com/OnlineID"
+                aria-describedby="psn-verification-help"
+              />
+              <small id="psn-verification-help">PlayStation uygulamasında profilini açıp Paylaş → Profili Paylaş seçeneğiyle aldığın bağlantıyı buraya yapıştır.</small>
+              <button className="social-primary" type="button" onClick={confirmVerification} disabled={verificationBusy || !verificationProfileUrl.trim()}>{verificationBusy ? <LoaderCircle size={15}/> : <ShieldCheck size={15}/>} Doğrulama isteği gönder</button>
             </>}
             <small>Kod 30 dakika geçerlidir. İstek gönderildikten sonra profil ve kod yetkili kişi tarafından kontrol edilir.</small>
           </div>}</> : <form className="psn-connect-form" onSubmit={connectPlayStation}>
