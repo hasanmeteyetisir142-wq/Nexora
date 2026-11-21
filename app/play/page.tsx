@@ -7,7 +7,7 @@ import { Activity, CalendarDays, Check, Clock3, Gamepad2, Gift, LoaderCircle, Me
 
 type Task = { id:string; task_key:string; title:string; description:string; reward_xp:number; active:boolean };
 type Session = { id:string; host_id:string; game_name:string; platform:string; slots_total:number; starts_at:string; note:string; status:string; profiles?:{display_name:string|null;username:string|null} };
-type EventItem = { id:string; creator_id:string; title:string; description:string; game_name:string; starts_at:string; max_players:number };
+type EventItem = { id:string; creator_id:string; title:string; description:string; game_name:string; starts_at:string; max_players:number };\ntype SessionMember = { id:string; session_id:string; user_id:string; status:string };
 type Post = { id:string; user_id:string; body:string; created_at:string };
 type Score = { user_id:string; score:number };
 type Wish = { id:string; game_name:string; platform:string };
@@ -21,7 +21,7 @@ export default function PlayHubPage(){
   const [claimed,setClaimed]=useState<string[]>([]);
   const [xp,setXp]=useState(0);
   const [coins,setCoins]=useState(0);
-  const [sessions,setSessions]=useState<Session[]>([]);
+  const [sessions,setSessions]=useState<Session[]>([]);\n  const [sessionMembers,setSessionMembers]=useState<SessionMember[]>([]);
   const [events,setEvents]=useState<EventItem[]>([]);
   const [posts,setPosts]=useState<Post[]>([]);
   const [wishes,setWishes]=useState<Wish[]>([]);
@@ -60,7 +60,7 @@ export default function PlayHubPage(){
     const firstError=[t.error,c.error,r.error,s.error,e.error,p.error,w.error,sc.error].find(Boolean);
     if(firstError) setError(firstError.message);
     setTasks(t.data||[]);setClaimed((c.data||[]).map(x=>x.task_id));setXp(r.data?.xp||0);setCoins(r.data?.coins||0);
-    setSessions(s.data||[]);setEvents(e.data||[]);setPosts(p.data||[]);setWishes(w.data||[]);setScores(sc.data||[]);
+    const sessionRows=s.data||[];setSessions(sessionRows);\n    const memberResult=sessionRows.length?await supabase.from("play_session_members").select("id,session_id,user_id,status").in("session_id",sessionRows.map(row=>row.id)):{data:[],error:null};\n    if(memberResult.error)setError(memberResult.error.message);setSessionMembers(memberResult.data||[]);\n    setEvents(e.data||[]);setPosts(p.data||[]);setWishes(w.data||[]);setScores(sc.data||[]);
   },[supabase]);
 
   useEffect(()=>{
@@ -86,7 +86,7 @@ export default function PlayHubPage(){
     if(e1)setError(e1.message);else{setSessionNote("");setNotice("Oyun ilanı oluşturuldu.");if(uid)await load(uid);}
     setBusy(false);
   }
-  async function joinSession(id:string){
+  async function reviewSessionRequest(memberId:string){\n    setBusy(true);setError("");const {error:e}=await supabase.from("play_session_members").update({status:"accepted"}).eq("id",memberId);\n    if(e)setError(e.message);else{setNotice("Oyuncu ekibe kabul edildi.");if(uid)await load(uid);}\n    setBusy(false);\n  }\n  async function joinSession(id:string){
     setBusy(true);setError("");const {error:e}=await supabase.from("play_session_members").insert({session_id:id,user_id:uid,status:"pending"});
     if(e)setError(e.code==="23505"?"Bu ilana zaten katılma isteği gönderdin.":e.message);else setNotice("Katılma isteğin ev sahibine gönderildi.");
     setBusy(false);
@@ -146,8 +146,8 @@ export default function PlayHubPage(){
 
     <section className="hub-section">
       <div className="hub-title"><div><span className="eyebrow">EKİBİNİ KUR</span><h2><Users size={20}/> Birlikte Oyna</h2></div><span className="hub-counter">{sessions.length} açık ilan</span></div>
-      <div className="hub-columns"><form className="hub-card hub-form" onSubmit={createSession}><h3><Plus size={17}/> Oyun ilanı oluştur</h3><label>Oyun<input value={sessionGame} onChange={e=>setSessionGame(e.target.value)} required maxLength={60}/></label><label>Platform<select value={sessionPlatform} onChange={e=>setSessionPlatform(e.target.value)}><option>PC</option><option>PlayStation</option><option>Xbox</option><option>Switch</option><option>Çapraz platform</option></select></label><label>Toplam oyuncu<select value={sessionSlots} onChange={e=>setSessionSlots(Number(e.target.value))}>{[2,3,4,5,6,8,10,16].map(n=><option key={n} value={n}>{n} kişi</option>)}</select></label><label>Not (isteğe bağlı)<textarea value={sessionNote} onChange={e=>setSessionNote(e.target.value)} maxLength={240} placeholder="Nasıl bir ekip arıyorsun?"/></label><button className="hub-primary" disabled={busy}><Plus size={15}/> İlanı yayınla</button></form>
-      <div className="hub-card"><div className="hub-card-heading"><h3><Swords size={17}/> Oyuncu arayanlar</h3><button onClick={()=>uid&&void load(uid)} aria-label="Yenile"><RefreshCw size={15}/></button></div>{sessions.length===0?<p className="hub-empty">Henüz açık ilan yok. İlk ekibi sen kur!</p>:<div className="hub-list">{sessions.map(s=><article className="hub-list-row" key={s.id}><div className="hub-game-badge"><Gamepad2 size={19}/></div><div className="hub-row-copy"><b>{s.game_name}</b><span>{s.platform} · {s.slots_total} kişilik ekip</span>{s.note&&<small>{s.note}</small>}</div>{s.host_id===uid?<span className="hub-tag">Senin ilanın</span>:<button className="hub-small-btn" disabled={busy} onClick={()=>void joinSession(s.id)}>Katıl</button>}</article>)}</div>}</div></div>
+      <div className="hub-columns"><form className="hub-card hub-form" onSubmit={createSession}><h3><Plus size={17}/> Oyun ilanı oluştur</h3><label>Oyun<input value={sessionGame} onChange={e=>setSessionGame(e.target.value)} required maxLength={60}/></label><label>Platform<select value={sessionPlatform} onChange={e=>setSessionPlatform(e.target.value)}><option>PC</option><option>PlayStation</option><option>Xbox</option><option>Nintendo</option><option>Mobil</option><option>Çapraz platform</option></select></label><label>Toplam oyuncu<select value={sessionSlots} onChange={e=>setSessionSlots(Number(e.target.value))}>{[2,3,4,5,6,8,10,16].map(n=><option key={n} value={n}>{n} kişi</option>)}</select></label><label>Not (isteğe bağlı)<textarea value={sessionNote} onChange={e=>setSessionNote(e.target.value)} maxLength={240} placeholder="Nasıl bir ekip arıyorsun?"/></label><button className="hub-primary" disabled={busy}><Plus size={15}/> İlanı yayınla</button></form>
+      <div className="hub-card"><div className="hub-card-heading"><h3><Swords size={17}/> Oyuncu arayanlar</h3><button onClick={()=>uid&&void load(uid)} aria-label="Yenile"><RefreshCw size={15}/></button></div>{sessions.length===0?<p className="hub-empty">Henüz açık ilan yok. İlk ekibi sen kur!</p>:<div className="hub-list">{sessions.map(s=><article className="hub-list-row" key={s.id}><div className="hub-game-badge"><Gamepad2 size={19}/></div><div className="hub-row-copy"><b>{s.game_name}</b><span>{s.platform} · {s.slots_total} kişilik ekip</span>{s.note&&<small>{s.note}</small>}</div>{s.host_id===uid?<div className="hub-session-host"><span className="hub-tag">{1+sessionMembers.filter(m=>m.session_id===s.id&&m.status==="accepted").length}/{s.slots_total} oyuncu</span>{sessionMembers.filter(m=>m.session_id===s.id&&m.status==="pending").map(m=><button className="hub-small-btn" key={m.id} disabled={busy||1+sessionMembers.filter(x=>x.session_id===s.id&&x.status==="accepted").length>=s.slots_total} onClick={()=>void reviewSessionRequest(m.id)}>İsteği kabul et</button>)}</div>:(()=>{const mine=sessionMembers.find(m=>m.session_id===s.id&&m.user_id===uid);return mine?<span className="hub-tag">{mine.status==="accepted"?"Ekibe katıldın":"İstek gönderildi"}</span>:<button className="hub-small-btn" disabled={busy||1+sessionMembers.filter(m=>m.session_id===s.id&&m.status==="accepted").length>=s.slots_total} onClick={()=>void joinSession(s.id)}>Katıl</button>;})()}</article>)}</div>}</div></div>
     </section>
 
     <section className="hub-section">
