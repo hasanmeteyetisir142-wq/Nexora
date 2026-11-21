@@ -15,7 +15,10 @@ type Wish = { id:string; game_name:string; platform:string };
 
 const todayTR = () => new Intl.DateTimeFormat("en-CA",{timeZone:"Europe/Istanbul",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
 
-export default function PlayHubPage(){
+type PlayTab = "tasks" | "sessions" | "mini" | "events" | "feed" | "wishlist";
+
+export default function PlayHubPage({ initialTab = "tasks" }: { initialTab?: PlayTab }){
+  const [activeTab] = useState<PlayTab>(initialTab);
   const supabase=useMemo(()=>createClient(),[]);
   const [uid,setUid]=useState("");
   const [tasks,setTasks]=useState<Task[]>([]);
@@ -160,42 +163,62 @@ export default function PlayHubPage(){
 
   return <WorkspaceShell><main className="content playhub">
     <div className="playhub-head"><div><div className="eyebrow"><Sparkles size={13}/> NEXORA OYUN MERKEZİ</div><h1>Her gün yeni bir macera.</h1><p className="subheading">Ekip bul, görevleri tamamla, XP kazan ve günün mini oyununda rekor kır.</p></div><div className="xp-pill"><Trophy size={18}/><span><b>{xp} XP</b><small>Oyuncu seviyesi puanın</small></span><span className="coin-count"><b>◈ {coins}</b><small>Nexora Jetonu</small></span></div></div>
+    <nav className="playhub-tabs" aria-label="Oyun merkezi sekmeleri">
+      <a className={activeTab==="tasks"?"active":""} href="/play/tasks">Günlük Görevler</a>
+      <a className={activeTab==="sessions"?"active":""} href="/play/sessions">Birlikte Oyna</a>
+      <a className={activeTab==="mini"?"active":""} href="/play/mini-games">Mini Oyunlar</a>
+      <a className={activeTab==="events"?"active":""} href="/play/events">Etkinlikler</a>
+      <a className={activeTab==="feed"?"active":""} href="/play/feed">Oyuncu Akışı</a>
+      <a className={activeTab==="wishlist"?"active":""} href="/play/wishlist">İstek Listesi</a>
+    </nav>
     {error&&<div className="hub-alert hub-error">{error}<button onClick={()=>setError("")}><X size={15}/></button></div>}
     {notice&&<div className="hub-alert hub-success">{notice}<button onClick={()=>setNotice("")}><X size={15}/></button></div>}
 
+    {activeTab === "tasks" && (
     <section className="hub-section">
       <div className="hub-title"><div><span className="eyebrow">BUGÜNÜN HEDEFLERİ</span><h2><Gift size={20}/> Günlük görevler</h2></div><span className="hub-counter">{claimedCount}/{tasks.length} tamamlandı</span></div>
       <div className="hub-task-grid">{tasks.map(task=><article className={`hub-task ${taskDone(task)?"task-complete":""}`} key={task.id}><div className="hub-task-icon"><Check size={17}/></div><div className="hub-task-copy"><b>{task.title}</b><p>{task.description}</p><small>+{task.reward_xp} XP · +{Math.max(1,Math.floor(task.reward_xp/5))} Jeton</small></div><button disabled={busy||taskDone(task)} onClick={()=>void claim(task)}>{taskDone(task)?"Alındı":"Ödülü al"}</button></article>)}</div>
     </section>
+    )}
 
+    {activeTab === "sessions" && (
     <section className="hub-section">
       <div className="hub-title"><div><span className="eyebrow">EKİBİNİ KUR</span><h2><Users size={20}/> Birlikte Oyna</h2></div><span className="hub-counter">{sessions.length} açık ilan</span></div>
       <div className="hub-columns"><form className="hub-card hub-form" onSubmit={createSession}><h3><Plus size={17}/> Oyun ilanı oluştur</h3><label>Oyun<input value={sessionGame} onChange={e=>setSessionGame(e.target.value)} required maxLength={60}/></label><label>Platform<select value={sessionPlatform} onChange={e=>setSessionPlatform(e.target.value)}><option>PC</option><option>PlayStation</option><option>Xbox</option><option>Nintendo</option><option>Mobil</option><option>Çapraz platform</option></select></label><label>Toplam oyuncu<select value={sessionSlots} onChange={e=>setSessionSlots(Number(e.target.value))}>{[2,3,4,5,6,8,10,16].map(n=><option key={n} value={n}>{n} kişi</option>)}</select></label><label>Not (isteğe bağlı)<textarea value={sessionNote} onChange={e=>setSessionNote(e.target.value)} maxLength={240} placeholder="Nasıl bir ekip arıyorsun?"/></label><button className="hub-primary" disabled={busy}><Plus size={15}/> İlanı yayınla</button></form>
       <div className="hub-card"><div className="hub-card-heading"><h3><Swords size={17}/> Oyuncu arayanlar</h3><button onClick={()=>uid&&void load(uid)} aria-label="Yenile"><RefreshCw size={15}/></button></div>{sessions.length===0?<p className="hub-empty">Henüz açık ilan yok. İlk ekibi sen kur!</p>:<div className="hub-list">{sessions.map(s=><article className="hub-list-row" key={s.id}><div className="hub-game-badge"><Gamepad2 size={19}/></div><div className="hub-row-copy"><b>{s.game_name}</b><span>{s.platform} · {s.slots_total} kişilik ekip</span>{s.note&&<small>{s.note}</small>}</div>{s.host_id===uid?<div className="hub-session-host"><span className="hub-tag">{1+sessionMembers.filter(m=>m.session_id===s.id&&m.status==="accepted").length}/{s.slots_total} oyuncu</span>{sessionMembers.filter(m=>m.session_id===s.id&&m.status==="pending").map(m=><button className="hub-small-btn" key={m.id} disabled={busy||1+sessionMembers.filter(x=>x.session_id===s.id&&x.status==="accepted").length>=s.slots_total} onClick={()=>void reviewSessionRequest(m.id)}>{`Kabul et: ${m.display_name||m.username||"Oyuncu"}`}</button>)}</div>:(()=>{const mine=sessionMembers.find(m=>m.session_id===s.id&&m.user_id===uid);return mine?<span className="hub-tag">{mine.status==="accepted"?"Ekibe katıldın":"İstek gönderildi"}</span>:<button className="hub-small-btn" disabled={busy||1+sessionMembers.filter(m=>m.session_id===s.id&&m.status==="accepted").length>=s.slots_total} onClick={()=>void joinSession(s.id)}>Katıl</button>;})()}</article>)}</div>}</div></div>
     </section>
+    )}
 
+    {activeTab === "mini" && (
     <section className="hub-section">
       <div className="hub-title"><div><span className="eyebrow">HER GÜN DEĞİŞEN OYUN</span><h2><Activity size={20}/> Günün mini oyunu: Refleks</h2></div><span className="hub-counter">Günlük skor tablosu</span></div>
       <div className="hub-columns mini-columns"><div className="hub-card reflex-card"><div className={`reflex-light ${game}`}>{game==="idle"?"HAZIR MISIN?":game==="waiting"?"BEKLE...":game==="ready"?"ŞİMDİ TIKLA!":reaction===-1?"ERKEN TIKLADIN":"TAMAMLANDI"}</div><p>Başlat'a bas, ışığın yeşile dönmesini bekle ve mümkün olduğunca hızlı tıkla.</p><button className="hub-primary" disabled={busy||game==="waiting"} onClick={game==="ready"||game==="waiting"?hitGame:startGame}>{game==="ready"||game==="waiting"?"Işığa tıkla":game==="done"?"Tekrar oyna":"Oyunu başlat"}</button>{reaction!==null&&reaction>0&&<div className="reflex-result"><b>{reaction} ms</b><span>En iyi skorun: {lastScore} puan</span></div>}</div>
       <div className="hub-card"><div className="hub-card-heading"><h3><Trophy size={17}/> Bugünün liderleri</h3><span>İlk 10</span></div>{scores.length===0?<p className="hub-empty">Bugün henüz skor yok. İlk rekoru sen kır!</p>:<div className="hub-list">{scores.map((s,i)=><div className="hub-list-row score-row" key={s.user_id}><b className="score-rank">#{i+1}</b><span className="hub-row-copy">{rankName(s.user_id)}</span><strong>{s.score} puan</strong></div>)}</div>}</div></div>
     </section>
+    )}
 
+    {activeTab === "events" && (
     <section className="hub-section">
       <div className="hub-title"><div><span className="eyebrow">TOPLULUĞU CANLANDIR</span><h2><CalendarDays size={20}/> Etkinlikler ve turnuvalar</h2></div></div>
       <div className="hub-columns"><form className="hub-card hub-form" onSubmit={createEvent}><h3><Plus size={17}/> Etkinlik oluştur</h3><label>Etkinlik adı<input value={eventTitle} onChange={e=>setEventTitle(e.target.value)} required maxLength={80} placeholder="Hafta sonu Minecraft buluşması"/></label><label>Oyun<input value={eventGame} onChange={e=>setEventGame(e.target.value)} required maxLength={60}/></label><label>Tarih ve saat<input type="datetime-local" value={eventDate} onChange={e=>setEventDate(e.target.value)} required min={new Date().toISOString().slice(0,16)}/></label><button className="hub-primary" disabled={busy}><CalendarDays size={15}/> Etkinliği yayınla</button></form>
       <div className="hub-card"><h3><CalendarDays size={17}/> Yaklaşan etkinlikler</h3>{events.length===0?<p className="hub-empty">Yaklaşan etkinlik yok. Bir tane düzenleyebilirsin!</p>:<div className="hub-list">{events.map(ev=><article className="hub-list-row" key={ev.id}><div className="hub-game-badge"><Trophy size={18}/></div><div className="hub-row-copy"><b>{ev.title}</b><span>{ev.game_name} · {eventMembers.filter(m=>m.event_id===ev.id).length}/{ev.max_players} kişi · {new Date(ev.starts_at).toLocaleString("tr-TR")}</span><small>{ev.description||"Topluluk etkinliği"}</small></div>{ev.creator_id===uid?<span className="hub-tag">Düzenleyici</span>:eventMembers.some(m=>m.event_id===ev.id&&m.user_id===uid)?<span className="hub-tag">Katıldın</span>:<button className="hub-small-btn" disabled={busy||eventMembers.filter(m=>m.event_id===ev.id).length>=ev.max_players} onClick={()=>void joinEvent(ev.id)}>Katıl</button>}</article>)}</div>}</div></div>
     </section>
+    )}
 
+    {activeTab === "feed" && (
     <section className="hub-section">
       <div className="hub-title"><div><span className="eyebrow">PAYLAŞ VE KEŞFET</span><h2><MessageSquare size={20}/> Oyuncu akışı</h2></div></div>
       <div className="hub-card"><form className="hub-post-form" onSubmit={createPost}><textarea value={postDraft} onChange={e=>setPostDraft(e.target.value)} maxLength={1000} placeholder="Bugün ne oynuyorsun? Bir şey paylaş..." required/><button className="hub-primary" disabled={busy||!postDraft.trim()}><Send size={15}/> Paylaş</button></form>{posts.length===0?<p className="hub-empty">Akışta henüz gönderi yok. İlk paylaşımı sen yap!</p>:<div className="hub-feed">{posts.map(p=><article key={p.id}><div className="hub-feed-avatar">{p.user_id===uid?"S":"N"}</div><div><b>{p.user_id===uid?"Sen":p.display_name||p.username||"Nexora oyuncusu"}</b><time>{new Date(p.created_at).toLocaleString("tr-TR")}</time><p>{p.body}</p></div></article>)}</div>}</div>
     </section>
+    )}
 
+    {activeTab === "wishlist" && (
     <section className="hub-section">
       <div className="hub-title"><div><span className="eyebrow">SONRA OYNAMAK İÇİN</span><h2><Gamepad2 size={20}/> Oyun istek listem</h2></div></div>
       <div className="hub-columns"><form className="hub-card hub-form" onSubmit={addWish}><h3><Plus size={17}/> Listeye oyun ekle</h3><label>Oyun adı<input value={wishName} onChange={e=>setWishName(e.target.value)} required maxLength={80} placeholder="Örn. Hades II"/></label><label>Platform<select value={wishPlatform} onChange={e=>setWishPlatform(e.target.value)}><option>Herhangi biri</option><option>PC</option><option>PlayStation</option><option>Xbox</option><option>Switch</option></select></label><button className="hub-primary" disabled={busy}><Plus size={15}/> Listeye ekle</button></form>
       <div className="hub-card"><h3><Gamepad2 size={17}/> Takip ettiğim oyunlar</h3>{wishes.length===0?<p className="hub-empty">İstek listen boş. Oynamak istediğin oyunları ekle.</p>:<div className="hub-list">{wishes.map(w=><div className="hub-list-row" key={w.id}><div className="hub-game-badge"><Gamepad2 size={18}/></div><div className="hub-row-copy"><b>{w.game_name}</b><span>{w.platform}</span></div><button className="hub-icon-btn" onClick={()=>void removeWish(w.id)} aria-label="Listeden çıkar"><X size={15}/></button></div>)}</div>}</div></div>
     </section>
+    )}
     <p className="hub-footnote"><Clock3 size={13}/> Görevler ve günlük mini oyun Türkiye saatine göre her gün yenilenir. XP puanları Nexora içi sanal ödüldür; nakit para değildir.</p>
   </main></WorkspaceShell>;
 }
