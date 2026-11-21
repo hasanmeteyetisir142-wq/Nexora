@@ -12,17 +12,32 @@ import {
   Radio, Globe2, CircleDot, LogOut, UserRound
 } from "lucide-react";
 
-const nav = [
-  { label: "Genel Bakış", icon: Home },
-  { label: "Oyunları Keşfet", icon: Compass },
-  { label: "Oyun Merkezi", icon: Gift, href: "/play" },
-  { label: "Arkadaşlar", icon: Users, href: "/friends" },
-  { label: "Mesajlar", icon: MessageCircle, href: "/messages" },
-  { label: "Topluluk", icon: Globe2, href: "/community" },
-  { label: "Profilim", icon: UserRound, href: "/profile" },
-  { label: "Oyun kütüphanem", icon: Gamepad2, href: "/library" },
-  { label: "Ayarlar", icon: Settings, href: "/settings" },
+const navSections = [
+  { label: "ANA SAYFA", items: [
+    { label: "Genel Bakış", icon: Home },
+    { label: "Oyunları Keşfet", icon: Compass },
+  ]},
+  { label: "OYUN", items: [
+    { label: "Oyun Merkezi", icon: Gift, href: "/play" },
+    { label: "Günlük Görevler", icon: Gift, href: "/play/tasks" },
+    { label: "Birlikte Oyna", icon: Users, href: "/play/sessions" },
+    { label: "Mini Oyunlar", icon: Activity, href: "/play/mini-games" },
+    { label: "Etkinlikler", icon: Globe2, href: "/play/events" },
+    { label: "Oyun İstek Listesi", icon: Gamepad2, href: "/play/wishlist" },
+  ]},
+  { label: "SOSYAL", items: [
+    { label: "Oyuncu Akışı", icon: MessageCircle, href: "/play/feed" },
+    { label: "Arkadaşlar", icon: Users, href: "/friends" },
+    { label: "Mesajlar", icon: MessageCircle, href: "/messages" },
+    { label: "Topluluk", icon: Globe2, href: "/community" },
+  ]},
+  { label: "HESABIM", items: [
+    { label: "Profilim", icon: UserRound, href: "/profile" },
+    { label: "Oyun kütüphanem", icon: Gamepad2, href: "/library" },
+    { label: "Ayarlar", icon: Settings, href: "/settings" },
+  ]},
 ];
+const nav = navSections.flatMap(section => section.items);
 const games = [
   { name: "VALORANT", genre: "Taktiksel FPS", tone: "red", mark: "V" },
   { name: "Minecraft", genre: "Sandbox · Macera", tone: "green", mark: "M" },
@@ -90,6 +105,7 @@ export default function Dashboard() {
     router.refresh();
   };
   const [active, setActive] = useState("Genel Bakış");
+  const [openMenuSection, setOpenMenuSection] = useState<string | null>(null);
   useEffect(() => {
     const view = new URLSearchParams(window.location.search).get("view");
     if (view === "games") setActive("Oyunları Keşfet");
@@ -108,7 +124,13 @@ export default function Dashboard() {
       <aside className={`sidebar ${mobileOpen ? "sidebar-open" : ""}`}>
         <div className="brand"><div className="brand-mark"><Sparkles size={19}/></div><span>NEXORA</span><button className="mobile-close" onClick={() => setMobileOpen(false)}><X size={19}/></button></div>
         <div className="side-label">MENÜ</div>
-        <nav className="nav-list">{nav.map(item => <button key={item.label} onClick={() => select(item.label)} className={`nav-item ${active === item.label ? "active" : ""}`}><item.icon size={18}/><span>{item.label}</span></button>)}</nav>
+        <nav className="workspace-nav">{navSections.map(section => {
+          const selectedInSection = section.items.some(item => active === item.label);
+          return <div key={section.label} className={`nav-section ${selectedInSection ? "has-active" : ""}`}>
+            <button type="button" aria-expanded={openMenuSection === section.label} className={`nav-section-trigger ${selectedInSection ? "active" : ""}`} onClick={() => setOpenMenuSection(current => current === section.label ? null : section.label)}>{section.label}<ChevronDown size={14}/></button>
+            <div className={`nav-section-links ${openMenuSection === section.label ? "is-open" : ""}`}>{section.items.map(item => <button key={item.label} type="button" onClick={() => {select(item.label);setOpenMenuSection(null);}} className={`nav-item ${active === item.label ? "active" : ""}`}><item.icon size={18}/><span>{item.label}</span></button>)}</div>
+          </div>;
+        })}</nav>
         <div className="side-label spaces-label">KÜTÜPHANEM</div>
         <button className="nav-item" onClick={() => router.push("/library")}><Gamepad2 size={18}/><span>Oyunlarım</span></button>
         <div className="sidebar-bottom">
