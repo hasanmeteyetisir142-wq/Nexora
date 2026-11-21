@@ -1,5 +1,5 @@
 "use client";
-import { useEffect,useMemo,useState } from "react";
+import { useEffect,useMemo,useState, type FormEvent } from "react";
 import { Users,Plus,LogIn,LogOut,Send,LoaderCircle,Globe2 } from "lucide-react";
 import WorkspaceShell from "@/components/workspace-shell";
 import { createClient } from "@/lib/supabase/client";
