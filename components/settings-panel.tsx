@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 type Visibility = "public" | "friends" | "selected" | "private";
 const sections = [
   { key: "platforms", label: "Bağlı platformlar", description: "Steam, Xbox, PlayStation ve diğer hesap bağlantıların." },
-  { key: "library", label: "Oyun kütüphanesi", description: "Sahip olduğun oyunlar ve oyun listelerin." },
+  { key: "library", label: "Oyun kütüphanesi", description: "Oyun listelerin. Bu ayar Nexora'da kimlerin görebileceğini belirler; PlayStation'daki gizlilik ayarları ve Sony'nin veri erişim izinleri ayrıca geçerlidir." },
   { key: "achievements", label: "Başarımlar ve liderlik", description: "Oyun başarımların, derecelerin ve sıralamaların." },
   { key: "online_status", label: "Çevrim içi durum", description: "Bağlı platformlardaki çevrim içi ve oynuyor durumun." },
 ] as const;
