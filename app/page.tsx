@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import PublicHome from "@/components/public-home";
+import NotificationBell from "@/components/notification-bell";
 import {
   Activity, ArrowRight, Bell, ChevronDown, Compass, Gamepad2, Headphones,
   Home, MessageCircle, Plus, Search, Settings, ShieldCheck, Sparkles,
@@ -119,7 +120,7 @@ export default function Dashboard() {
         <header className="topbar">
           <button className="mobile-menu" onClick={() => setMobileOpen(true)}><Menu size={21}/></button>
           <div className="breadcrumb">NEXORA <span>/</span> <b>{active.toUpperCase()}</b></div>
-          <div className="top-actions"><label className="searchbox"><Search size={17}/><input placeholder="Oyun, oyuncu veya topluluk ara..." value={query} onChange={e => setQuery(e.target.value)}/><kbd>⌘ K</kbd></label><button className="icon-btn notification" aria-label="Bildirimler"><Bell size={18}/><i/></button><div className="top-avatar">{accountInitial}</div></div>
+          <div className="top-actions"><label className="searchbox"><Search size={17}/><input placeholder="Oyun, oyuncu veya topluluk ara..." value={query} onChange={e => setQuery(e.target.value)}/><kbd>⌘ K</kbd></label><NotificationBell/><div className="top-avatar">{accountInitial}</div></div>
         </header>
 
         {active === "Genel Bakış" ? <div className="content">
