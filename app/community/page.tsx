@@ -1,6 +1,6 @@
 "use client";
 import { useEffect,useMemo,useState } from "react";
-import { Users,Plus,LogIn,LogOut,Send,LoaderCircle,Globe2,Trash2,Edit3,Shield,Save,X,Video } from "lucide-react";
+import { Users,Plus,LogIn,LogOut,Send,LoaderCircle,Globe2,Trash2,Edit3,Shield,Save,X,Video,Settings,MoreVertical } from "lucide-react";
 import WorkspaceShell from "@/components/workspace-shell";
 import CommunityCall from "@/components/community-call";
 import { createClient } from "@/lib/supabase/client";
@@ -15,6 +15,7 @@ export default function CommunityPage(){
  const [name,setName]=useState("");const [description,setDescription]=useState("");const [draft,setDraft]=useState("");const [creating,setCreating]=useState(false);const [busy,setBusy]=useState(false);const [error,setError]=useState("");const [notice,setNotice]=useState("");
  const [editingCommunity,setEditingCommunity]=useState(false);const [editName,setEditName]=useState("");const [editDescription,setEditDescription]=useState("");
  const [editingPost,setEditingPost]=useState("");const [editBody,setEditBody]=useState("");
+ const [settingsOpen,setSettingsOpen]=useState(false);const [postMenu,setPostMenu]=useState("");
  async function load(id:string){
   const [{data:c,error:ce},{data:m,error:me}]=await Promise.all([
    supabase.from("communities").select("id,name,slug,description,owner_id").order("created_at",{ascending:false}),
@@ -33,7 +34,7 @@ export default function CommunityPage(){
   if(e)setError(e.message);else setPosts((data||[]) as Post[]);
  }
  async function openCommunity(id:string){
-  setSelected(id);setEditingCommunity(false);setEditingPost("");await Promise.all([loadPosts(id),loadMembers(id)]);
+  setSelected(id);setEditingCommunity(false);setEditingPost("");setSettingsOpen(false);setPostMenu("");await Promise.all([loadPosts(id),loadMembers(id)]);
  }
  async function createCommunity(e:React.FormEvent){
   e.preventDefault();if(!name.trim()||creating)return;setCreating(true);setError("");setNotice("");
@@ -102,15 +103,28 @@ export default function CommunityPage(){
    <section className="social-card community-feed">
     <div className="social-card-head"><h2>{current?current.name:"Topluluk alanı"}</h2>{current&&<span><Users size={14}/> {members.length} üye</span>}</div>
     {!current?<p className="social-empty">Gönderileri ve sohbeti görmek için bir topluluk seç.</p>:!joined.includes(current.id)?<p className="social-empty">Bu topluluğun alanını açmak için önce katıl.</p>:<>
-     <div className="community-role-banner"><Shield size={16}/> Senin rütben: <b>{roleLabel(myRole||"member")}</b></div>
-     {myRole==="owner"&&<div className="community-manage">
-      {!editingCommunity?<><button className="friend-action" onClick={()=>{setEditName(current.name);setEditDescription(current.description||"");setEditingCommunity(true);}}><Edit3 size={15}/> Topluluğu düzenle</button><button className="friend-action danger" onClick={()=>void deleteCommunity()} disabled={busy}><Trash2 size={15}/> Topluluğu sil</button></>:<div className="community-edit-form"><input value={editName} onChange={e=>setEditName(e.target.value)} maxLength={48}/><textarea value={editDescription} onChange={e=>setEditDescription(e.target.value)} maxLength={500}/><button className="friend-action" onClick={()=>void saveCommunity()} disabled={busy||editName.trim().length<3}><Save size={15}/> Kaydet</button><button className="friend-action" onClick={()=>setEditingCommunity(false)}><X size={15}/> İptal</button></div>}
-     </div>}
-     <div className="community-members"><b><Users size={15}/> Üye rütbeleri</b>{members.map(m=><div className="community-member-row" key={m.user_id}><span>{m.user_id===uid?"Sen":`Oyuncu ${m.user_id.slice(0,5)}`}</span>{m.role==="owner"||myRole!=="owner"?<small>{roleLabel(m.role)}</small>:<select value={m.role} disabled={busy} onChange={e=>void changeRole(m,e.target.value as Member["role"])}><option value="member">Üye</option><option value="moderator">Moderatör</option><option value="admin">Yönetici</option></select>}</div>)}</div>
+     <div className="community-toolbar">
+      <span className="community-role-chip"><Shield size={14}/> {roleLabel(myRole||"member")}</span>
+      <div className="community-settings-wrap">
+       <button className="community-settings-btn" onClick={()=>setSettingsOpen(v=>!v)} aria-label="Topluluk ayarları"><Settings size={16}/> Ayarlar</button>
+       {settingsOpen&&<div className="community-settings-panel">
+        <div className="community-settings-title"><b>Topluluk ayarları</b><button onClick={()=>setSettingsOpen(false)} aria-label="Kapat"><X size={15}/></button></div>
+        <div className="community-settings-section"><small>BENİM RÜTBEM</small><b>{roleLabel(myRole||"member")}</b></div>
+        {myRole==="owner"&&<>
+         <div className="community-settings-section"><small>TOPLULUK BİLGİLERİ</small>
+          {!editingCommunity?<button className="community-setting-action" onClick={()=>{setEditName(current.name);setEditDescription(current.description||"");setEditingCommunity(true);}}><Edit3 size={14}/> Adı ve açıklamayı düzenle</button>:<div className="community-edit-form"><input value={editName} onChange={e=>setEditName(e.target.value)} maxLength={48} placeholder="Topluluk adı"/><textarea value={editDescription} onChange={e=>setEditDescription(e.target.value)} maxLength={500} placeholder="Açıklama"/><button className="friend-action" onClick={()=>void saveCommunity()} disabled={busy||editName.trim().length<3}><Save size={14}/> Kaydet</button><button className="community-setting-action" onClick={()=>setEditingCommunity(false)}><X size={14}/> Vazgeç</button></div>}
+         </div>
+         <div className="community-settings-section"><small>ÜYE RÜTBELERİ</small>{members.map(m=><div className="community-member-row" key={m.user_id}><span>{m.user_id===uid?"Sen":"Oyuncu "+m.user_id.slice(0,5)}</span>{m.role==="owner"?<small>Kurucu</small>:<select value={m.role} disabled={busy} onChange={e=>void changeRole(m,e.target.value as Member["role"])}><option value="member">Üye</option><option value="moderator">Moderatör</option><option value="admin">Yönetici</option></select>}</div>)}</div>
+         <button className="community-setting-action danger" onClick={()=>void deleteCommunity()} disabled={busy}><Trash2 size={14}/> Topluluğu sil</button>
+        </>}
+        {myRole!=="owner"&&<p className="community-settings-note">Topluluk bilgilerini ve üye rütbelerini yalnızca kurucu yönetebilir.</p>}
+       </div>}
+      </div>
+     </div>
      <CommunityCall communityId={current.id} userId={uid}/>
      <form className="community-post-form" onSubmit={publish}><textarea value={draft} onChange={e=>setDraft(e.target.value)} maxLength={3000} placeholder="Toplulukla bir şey paylaş..." required/><button className="friend-action" disabled={busy||!draft.trim()}><Send size={15}/> Paylaş</button></form>
      {posts.length===0?<p className="social-empty">İlk gönderiyi sen paylaş!</p>:posts.map(p=><article className="community-post" key={p.id}><div><b>{p.author_id===uid?"Sen":"Nexora oyuncusu"}</b><time>{new Date(p.created_at).toLocaleString("tr-TR")}</time></div>{editingPost===p.id?<div className="community-edit-form"><textarea value={editBody} onChange={e=>setEditBody(e.target.value)} maxLength={3000}/><button className="friend-action" onClick={()=>void savePost(p.id)} disabled={busy||!editBody.trim()}><Save size={14}/> Kaydet</button><button className="friend-action" onClick={()=>setEditingPost("")}>İptal</button></div>:<p>{p.body}</p>}
-      {(p.author_id===uid||canManage)&&<div className="community-post-actions">{p.author_id===uid&&<button onClick={()=>{setEditingPost(p.id);setEditBody(p.body);}}><Edit3 size={13}/> Düzenle</button>}<button onClick={()=>void deletePost(p.id)} disabled={busy}><Trash2 size={13}/> Sil</button></div>}
+      {(p.author_id===uid||canManage)&&<div className="community-post-menu-wrap"><button className="community-post-more" aria-label="Gönderi seçenekleri" onClick={()=>setPostMenu(v=>v===p.id?"":p.id)}><MoreVertical size={17}/></button>{postMenu===p.id&&<div className="community-post-menu">{p.author_id===uid&&<button onClick={()=>{setEditingPost(p.id);setEditBody(p.body);setPostMenu("");}}><Edit3 size={13}/> Düzenle</button>}<button className="danger" onClick={()=>{setPostMenu("");void deletePost(p.id);}} disabled={busy}><Trash2 size={13}/> Sil</button></div>}</div>}
      </article>)}
     </>}
    </section>
