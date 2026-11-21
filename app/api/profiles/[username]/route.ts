@@ -25,7 +25,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   }
   if (!data) return NextResponse.json({ error: "Oyuncu bulunamadı." }, { status: 404 });
 
-  const result = data as ProfileResult;
+  const result = data as ProfileResult;\n  const { data: rewardStats, error: rewardStatsError } = await supabase.rpc("nexora_profile_stats", { target_username: decodeURIComponent(username).toLowerCase() });\n  if (rewardStatsError) console.error("Profile game stats unavailable:", rewardStatsError.message);
   let games: Array<{ appid: number; name: string; playtime_forever: number; img_icon_url?: string }> = [];
   let libraryMessage = "";
 
@@ -62,7 +62,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     platforms: result.platforms,
     games,
     library_message: libraryMessage,
-    achievements: result.visibility.achievements ? [] : null,
+    achievements: result.visibility.achievements ? [] : null,\n    reward_stats: rewardStatsError ? { visible: false } : rewardStats,
     online_status: null,
     is_owner: result.is_owner,
   }, { headers: { "Cache-Control": "private, no-store" } });
