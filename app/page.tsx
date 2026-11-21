@@ -126,7 +126,7 @@ export default function Dashboard() {
         <div className="side-label">MENÜ</div>
         <nav className="workspace-nav">{navSections.map(section => {
           const selectedInSection = section.items.some(item => active === item.label);
-          return <div key={section.label} className={`nav-section ${selectedInSection ? "has-active" : ""}`}>
+          return <div key={section.label} className={`nav-section ${selectedInSection ? "has-active" : ""} ${openMenuSection === section.label ? "expanded" : ""}`}>
             <button type="button" aria-expanded={openMenuSection === section.label} className={`nav-section-trigger ${selectedInSection ? "active" : ""}`} onClick={() => setOpenMenuSection(current => current === section.label ? null : section.label)}>{section.label}<ChevronDown size={14}/></button>
             <div className={`nav-section-links ${openMenuSection === section.label ? "is-open" : ""}`}>{section.items.map(item => <button key={item.label} type="button" onClick={() => {select(item.label);setOpenMenuSection(null);}} className={`nav-item ${active === item.label ? "active" : ""}`}><item.icon size={18}/><span>{item.label}</span></button>)}</div>
           </div>;
